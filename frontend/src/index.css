@@ -1,0 +1,489 @@
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap");
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+  font-family: "Lexend", sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: hidden !important;
+}
+
+/* hide vertical scrollbar completely */
+::-webkit-scrollbar:vertical {
+  width: 0px;
+}
+
+body {
+  scrollbar-width: none;
+}
+
+body {
+  background-color: #efefef;
+}
+
+.shadow {
+  box-shadow: 0 0px 10px rgba(77, 77, 77, 0.1);
+}
+
+.lineShadow {
+  box-shadow: 0 0px 10px rgba(73, 122, 245);
+}
+
+.dropdown {
+  transition: all 0.3s linear 0s;
+  list-style: outside none none;
+  right: -50px;
+  top: 45px;
+  opacity: 0;
+  visibility: hidden;
+  border: 1px solid #dadada;
+  overflow-y: scroll;
+  border-radius: 4px;
+}
+
+.dropdown.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dropdown::-webkit-scrollbar {
+  display: none;
+  scroll-behavior: smooth;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  height: 8px; /* horizontal scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #ffffff;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #000000;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #333333;
+}
+.chat-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 10px;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}
+
+/* =========================================
+   animations.css — Navbar & Sidebar Animations
+   Import this in your main index.css or App.css
+   ========================================= */
+
+/* --- Keyframes --- */
+
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes badgePop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes sidebarItemIn {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes badgeSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.6) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* --- Navbar Styles --- */
+
+/* Dropdown panel */
+.dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.08);
+  transform-origin: top right;
+}
+
+.dropdown.show {
+  display: block;
+  animation: fadeSlideDown 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Icon buttons in navbar */
+.nav-icon-btn {
+  transition:
+    background 0.18s ease,
+    transform 0.15s ease,
+    box-shadow 0.18s ease;
+}
+
+.nav-icon-btn:hover {
+  background: #e0e0e0 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.nav-icon-btn:active {
+  transform: scale(0.93);
+}
+
+/* Badge red dot */
+.badge-dot {
+  animation: badgePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Search bar focus glow */
+.search-input-wrap {
+  transition:
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+  border-radius: 10px;
+}
+
+.search-input-wrap:focus-within {
+  box-shadow: 0 0 0 2px rgba(21, 127, 215, 0.25);
+  background: #f5f5f5;
+}
+
+/* Avatar hover */
+.avatar-btn {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.avatar-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+/* Notification/reminder rows */
+.notification-row {
+  transition: background 0.15s ease;
+}
+
+.notification-row:hover {
+  background: #d4d4d4 !important;
+}
+
+/* --- Sidebar Styles --- */
+
+/* Sidebar nav item */
+.sidebar-item {
+  transition:
+    background 0.18s ease,
+    transform 0.15s ease,
+    box-shadow 0.18s ease;
+  animation: sidebarItemIn 0.3s ease both;
+}
+
+.sidebar-item:hover {
+  background: #e8e8e8 !important;
+  transform: translateX(3px);
+}
+
+.sidebar-item-active {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+/* Icon inside sidebar item */
+.sidebar-icon {
+  transition: transform 0.2s ease;
+}
+
+.sidebar-item:hover .sidebar-icon {
+  transform: scale(1.15);
+}
+
+/* Sidebar badge */
+.sidebar-badge {
+  animation: badgeSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Logout button */
+.logout-btn {
+  transition:
+    background 0.18s ease,
+    transform 0.15s ease,
+    box-shadow 0.18s ease;
+}
+
+.logout-btn:hover {
+  background: #e0e0e0 !important;
+  transform: translateX(3px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.logout-btn:active {
+  transform: scale(0.97);
+}
+
+/* Sidebar logo icon spin on hover */
+.sidebar-logo-icon {
+  transition: transform 0.3s ease;
+}
+
+.sidebar-logo-icon:hover {
+  transform: rotate(10deg) scale(1.05);
+}
+
+/* =========================================
+   animations.css — Navbar & Sidebar Animations
+   Import this in your main index.css or App.css
+   ========================================= */
+
+/* --- Keyframes --- */
+
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes badgePop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes sidebarItemIn {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes taskSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes badgeSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.6) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* --- Navbar Styles --- */
+
+/* Dropdown panel */
+.dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.08);
+  transform-origin: top right;
+}
+
+.dropdown.show {
+  display: block;
+  animation: fadeSlideDown 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Icon buttons in navbar */
+.nav-icon-btn {
+  transition:
+    background 0.18s ease,
+    transform 0.15s ease,
+    box-shadow 0.18s ease;
+}
+
+.nav-icon-btn:hover {
+  background: #e0e0e0 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.nav-icon-btn:active {
+  transform: scale(0.93);
+}
+
+/* Badge red dot */
+.badge-dot {
+  animation: badgePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Search bar focus glow */
+.search-input-wrap {
+  transition:
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+  border-radius: 10px;
+}
+
+.search-input-wrap:focus-within {
+  box-shadow: 0 0 0 2px rgba(21, 127, 215, 0.25);
+  background: #f5f5f5;
+}
+
+/* Avatar hover */
+.avatar-btn {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.avatar-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+/* Notification/reminder rows */
+.notification-row {
+  transition: background 0.15s ease;
+}
+
+.notification-row:hover {
+  background: #d4d4d4 !important;
+}
+
+/* --- Sidebar Styles --- */
+
+/* Sidebar nav item */
+.sidebar-item {
+  transition:
+    background 0.18s ease,
+    transform 0.15s ease,
+    box-shadow 0.18s ease;
+  animation: sidebarItemIn 0.3s ease both;
+}
+
+.sidebar-item:hover {
+  background: #e8e8e8 !important;
+  transform: translateX(3px);
+}
+
+.sidebar-item-active {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+/* Icon inside sidebar item */
+.sidebar-icon {
+  transition: transform 0.2s ease;
+}
+
+.sidebar-item:hover .sidebar-icon {
+  transform: scale(1.15);
+}
+
+/* Sidebar badge */
+.sidebar-badge {
+  animation: badgeSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Logout button */
+.logout-btn {
+  transition:
+    background 0.18s ease,
+    transform 0.15s ease,
+    box-shadow 0.18s ease;
+}
+
+.logout-btn:hover {
+  background: #e0e0e0 !important;
+  transform: translateX(3px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.logout-btn:active {
+  transform: scale(0.97);
+}
+
+/* Sidebar logo icon spin on hover */
+.sidebar-logo-icon {
+  transition: transform 0.3s ease;
+}
+
+.sidebar-logo-icon:hover {
+  transform: rotate(10deg) scale(1.05);
+}
