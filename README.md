@@ -1,5 +1,3 @@
-<div align="center">
-
 # Project Management System
 
 **A full-stack Java-based project management platform built for teams —**  
@@ -11,15 +9,15 @@
 
 <br/>
 
-[✨ Features](#-features) • [🛠 Tech Stack](#-tech-stack) • [📸 Screenshots](#-screenshots) • [⚡ Installation](#-installation) • [📁 Project Structure](#-project-structure) • [🤝 Contributing](#-contributing)
+<div align="center">
+
+[Features](#-features) • [Tech Stack](#-tech-stack) • [Screenshots](#-screenshots) • [Installation](#-installation) • [Project Structure](#-project-structure) • [Contributing](#-contributing)
 
 </div>
 
----
+## Features
 
-## ✨ Features
-
-### 🔐 Authentication — Invite-Based System
+### Authentication — Invite-Based System
 
 - **Admin creates members** — no self-registration allowed
 - New member receives an **email with a secure token link** to set their password
@@ -29,7 +27,7 @@
 
 ---
 
-### 📊 Dashboard
+### Dashboard
 
 - Overview of **tasks** and **projects** at a glance
 - **File upload graph** — visual stats of uploaded documents
@@ -38,7 +36,7 @@
 
 ---
 
-### 📋 Projects Page
+### Projects Page
 
 - View **all projects** in one place
 - Admin can create and manage projects
@@ -47,7 +45,7 @@
 
 ---
 
-### 🗂️ Kanban Board
+### Kanban Board
 
 - Visual **drag & drop** task management
 - Three-column workflow: **To Do → In Progress → Done**
@@ -58,7 +56,7 @@
 
 ---
 
-### ✅ My Tasks Page _(Member View)_
+## My Tasks Page _(Member View)_
 
 - Members see only **their assigned tasks**
 - **Drag & drop** to change task status
@@ -67,7 +65,7 @@
 
 ---
 
-### 📅 Calendar Page
+### Calendar Page
 
 - Tasks displayed **date-wise** on a calendar view
 - **Admin** sees all tasks across all projects
@@ -76,7 +74,7 @@
 
 ---
 
-### 💬 Chat System
+### Chat System
 
 - **Project-based chatrooms** — one room per project
 - All project members can chat within their project room
@@ -85,7 +83,7 @@
 
 ---
 
-### 📁 Drive System
+### Drive System
 
 - Upload and store **project documents**
 - Browse a clean **file list**
@@ -94,7 +92,7 @@
 
 ---
 
-### 🔍 Search, Filter & Sort
+### Search, Filter & Sort
 
 Available throughout the app wherever needed:
 
@@ -105,86 +103,67 @@ Available throughout the app wherever needed:
 
 ---
 
-## 👥 Role Permissions
+## Tech Stack
 
-| Feature                   | Admin | Member |
-| ------------------------- | ----- | ------ |
-| Create Members            | ✅    | ❌     |
-| Create Projects           | ✅    | ❌     |
-| Create Tasks              | ✅    | ❌     |
-| Move Any Task (Kanban)    | ✅    | ❌     |
-| Move Own Tasks            | ✅    | ✅     |
-| View All Tasks (Calendar) | ✅    | ❌     |
-| View Own Tasks (Calendar) | ✅    | ✅     |
-| Chat in Project Room      | ✅    | ✅     |
-| Upload / Download Files   | ✅    | ✅     |
+| Layer        | Technology                   |
+| ------------ | ---------------------------- |
+| **Frontend** | React.js, Material UI (MUI)  |
+| **Backend**  | Spring Boot, Spring Security |
+| **Database** | MySQL                        |
 
 ---
 
-## 🛠 Tech Stack
+## Screenshots
 
-| Layer           | Technology                     |
-| --------------- | ------------------------------ |
-| **Frontend**    | React.js, Material UI (MUI)    |
-| **Backend**     | Spring Boot, Spring Security   |
-| **Database**    | MySQL                          |
-| **Auth**        | JWT + Invite-based Email Token |
-| **Email**       | JavaMailSender (SMTP)          |
-| **Drag & Drop** | React DnD / dnd-kit            |
-
----
-
-## 📸 Screenshots
-
-### 🔐 Login Page
-
-![Login](screenshots/login.png)
-
-### 📧 Set Password Page _(via email invite)_
-
-![Set Password](screenshots/set-password.png)
-
-### 📊 Dashboard
+### Dashboard
 
 ![Dashboard](screenshots/dashboard.png)
 
-### 📋 Projects Page
+### Login Page
+
+![Login](screenshots/login.png)
+
+### Set Password Page _(via email invite)_
+
+![Set Password](screenshots/set-password.png)
+
+### Projects Page
 
 ![Projects](screenshots/project-list.png)
 
-### 🗂️ Kanban Board
+### Kanban Board
 
 ![Kanban](screenshots/kanban-board.png)
 
-### 🃏 Task Detail Modal
+### Task Detail Modal
 
 ![Task Detail](screenshots/task-detail.png)
 
-### ➕ Create Task Modal
+### Create Task Modal
 
 ![Create Task](screenshots/create-task.png)
 
-### ✅ My Tasks
+### My Tasks
 
 ![My Tasks](screenshots/my-tasks.png)
 
-### 📅 Calendar
+### Calendar
 
 ![Calendar](screenshots/calendar.png)
 
-### 💬 Team Chat
+### Team Chat
 
 ![Chat](screenshots/chat.png)
 
-### 📁 Drive
+### Drive
 
 ![Drive](screenshots/drive.png)
 
 ---
 
-## ⚡ Installation
+## Installation
 
-### ✅ Prerequisites
+### Prerequisites
 
 Make sure the following are installed:
 
@@ -195,7 +174,7 @@ Make sure the following are installed:
 
 ---
 
-### 🖥️ Frontend Setup
+### Frontend Setup
 
 ```bash
 # Navigate to frontend directory
@@ -205,14 +184,14 @@ cd frontend
 npm install
 
 # Start development server
-npm start
+npm run dev
 ```
 
-> Runs on: `http://localhost:3000`
+> Runs on: `http://localhost:5173`
 
 ---
 
-### ⚙️ Backend Setup
+### Backend Setup
 
 ```bash
 # Navigate to backend directory
@@ -226,120 +205,15 @@ mvn spring-boot:run
 
 ---
 
-### 🗄️ Database Setup
+## Author
 
-```sql
-CREATE DATABASE project_management;
-```
-
-Update `src/main/resources/application.properties`:
-
-```properties
-# Database
-spring.datasource.url=jdbc:mysql://localhost:3306/project_management
-spring.datasource.username=your_username
-spring.datasource.password=your_password
-spring.jpa.hibernate.ddl-auto=update
-
-# JWT
-jwt.secret=your_jwt_secret_key
-jwt.expiration=86400000
-
-# Email (Invite System)
-spring.mail.host=smtp.gmail.com
-spring.mail.port=587
-spring.mail.username=your_email@gmail.com
-spring.mail.password=your_app_password
-spring.mail.properties.mail.smtp.auth=true
-spring.mail.properties.mail.smtp.starttls.enable=true
-```
-
----
-
-## 📁 Project Structure
-
-```
-project-management-system/
-├── frontend/                        # React.js Application
-│   ├── public/
-│   ├── src/
-│   │   ├── components/              # Reusable UI components
-│   │   │   ├── KanbanBoard/
-│   │   │   ├── Chat/
-│   │   │   ├── Drive/
-│   │   │   ├── Calendar/
-│   │   │   └── Modals/
-│   │   ├── pages/                   # Page-level components
-│   │   │   ├── Dashboard.jsx
-│   │   │   ├── Projects.jsx
-│   │   │   ├── KanbanBoard.jsx
-│   │   │   ├── MyTasks.jsx
-│   │   │   ├── Calendar.jsx
-│   │   │   ├── Chat.jsx
-│   │   │   ├── Drive.jsx
-│   │   │   ├── Login.jsx
-│   │   │   └── SetPassword.jsx
-│   │   ├── services/                # Axios API calls
-│   │   ├── context/                 # Auth & global state
-│   │   └── App.js
-│   └── package.json
-│
-├── backend/                         # Spring Boot Application
-│   ├── src/main/java/
-│   │   ├── controller/              # REST Controllers
-│   │   ├── service/                 # Business Logic
-│   │   ├── model/                   # JPA Entity Classes
-│   │   ├── repository/              # Spring Data Repositories
-│   │   ├── security/                # JWT + Spring Security Config
-│   │   └── util/                    # Email & Token Utilities
-│   └── pom.xml
-│
-├── screenshots/                     # App screenshots
-└── README.md
-```
-
----
-
-## 🤝 Contributing
-
-```bash
-# 1. Fork the repository
-
-# 2. Create your feature branch
-git checkout -b feature/YourFeature
-
-# 3. Commit your changes
-git commit -m "Add: YourFeature"
-
-# 4. Push to the branch
-git push origin feature/YourFeature
-
-# 5. Open a Pull Request
-```
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👨‍💻 Author
+## Author
 
 <div align="center">
 
 **Arman Ali**
-
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/arman-ali-dev)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/arman-ali-dev)
-
-_Built with ❤️ using React.js & Spring Boot_
+[LinkedIn](https://www.linkedin.com/in/armaan-ali-dev/)
 
 </div>
 
 ---
-
-<div align="center">
-  <sub>⭐ If you found this project useful, please consider giving it a star!</sub>
-</div>
