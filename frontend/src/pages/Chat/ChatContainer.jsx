@@ -8,7 +8,6 @@ import attachFileIcon from "../../assets/attach.png";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage, fetchMessages } from "../../redux/member/chatSlice";
 import { uploadToCloudinary } from "../../util/uploadToCloudinary";
-kuwait
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 const getMessageType = ( file ) =>

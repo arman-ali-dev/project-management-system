@@ -11,7 +11,7 @@
 
 <div align="center">
 
-[Features](#-features) • [Tech Stack](#-tech-stack) • [Screenshots](#-screenshots) • [Installation](#-installation) • [Project Structure](#-project-structure) • [Contributing](#-contributing)
+[Features](#-features) • [Tech Stack](#-tech-stack) • [Screenshots](#-screenshots) • [Installation](#-installation)
 
 </div>
 
@@ -119,9 +119,9 @@ Available throughout the app wherever needed:
 
 ![Dashboard](screenshots/dashboard.png)
 
-### Login Page
+### Signin Page
 
-![Login](screenshots/login.png)
+![Login](screenshots/signin.png)
 
 ### Set Password Page _(via email invite)_
 
@@ -129,7 +129,7 @@ Available throughout the app wherever needed:
 
 ### Projects Page
 
-![Projects](screenshots/project-list.png)
+![Projects](screenshots/projects.png)
 
 ### Kanban Board
 
@@ -137,7 +137,7 @@ Available throughout the app wherever needed:
 
 ### Task Detail Modal
 
-![Task Detail](screenshots/task-detail.png)
+![Task Detail](screenshots/task-details.png)
 
 ### Create Task Modal
 
@@ -154,10 +154,6 @@ Available throughout the app wherever needed:
 ### Team Chat
 
 ![Chat](screenshots/chat.png)
-
-### Drive
-
-![Drive](screenshots/drive.png)
 
 ---
 
@@ -204,8 +200,6 @@ mvn spring-boot:run
 > Runs on: `http://localhost:8080`
 
 ---
-
-## Author
 
 ## Author
 
