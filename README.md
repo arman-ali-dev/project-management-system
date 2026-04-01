@@ -11,7 +11,7 @@
 
 <div align="center">
 
-[Features](#-features) • [Tech Stack](#-tech-stack) • [Screenshots](#-screenshots) • [Installation](#-installation)
+[Features](#-features) • [Tech Stack](#tech-stack) • [Screenshots](#screenshots) • [Installation](#installation)
 
 </div>
 
