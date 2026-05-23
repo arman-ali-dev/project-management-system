@@ -8,7 +8,7 @@ export const fetchProject = createAsyncThunk(
       const token = localStorage.getItem("jwt");
 
       const { data } = await axios.get(
-        `http://localhost:8080/api/projects/${projectId}`,
+        `https://apislack.a2groups.org/api/projects/${projectId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

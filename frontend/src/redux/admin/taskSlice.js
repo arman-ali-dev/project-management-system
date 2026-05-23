@@ -8,7 +8,7 @@ export const fetchTasks = createAsyncThunk(
     try {
       const token = localStorage.getItem("jwt");
 
-      let url = "http://localhost:8080/api/admin/tasks/all";
+      let url = "https://apislack.a2groups.org/api/admin/tasks/all";
 
       if (filterData?.status) {
         url += `?status=${filterData.status}`;
@@ -39,7 +39,7 @@ export const createTask = createAsyncThunk(
     try {
       const token = localStorage.getItem("jwt");
       const { data } = await axios.post(
-        "http://localhost:8080/api/admin/tasks",
+        "https://apislack.a2groups.org/api/admin/tasks",
         taskData,
         {
           headers: {
@@ -63,7 +63,7 @@ export const addMemberToTask = createAsyncThunk(
     try {
       const token = localStorage.getItem("jwt");
       const { data } = await axios.post(
-        `http://localhost:8080/api/admin/tasks/${taskId}/members`,
+        `https://apislack.a2groups.org/api/admin/tasks/${taskId}/members`,
         selectedMembers,
         {
           headers: {

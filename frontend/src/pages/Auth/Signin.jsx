@@ -42,7 +42,7 @@ const Signin = () =>
             setLoading( true );
             try
             {
-                const { data } = await axios.post( "http://localhost:8080/auth/login", values );
+                const { data } = await axios.post( "https://apislack.a2groups.org/auth/login", values );
                 localStorage.setItem( "jwt", data.token );
                 navigate( data.role == "ADMIN" ? "/dashboard" : "/projects" )
 

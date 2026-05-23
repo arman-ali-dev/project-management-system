@@ -7,7 +7,7 @@ export const fetchProjects = createAsyncThunk(
     try {
       const token = localStorage.getItem("jwt");
 
-      let url = "http://localhost:8080/api/projects/all";
+      let url = "https://apislack.a2groups.org/api/projects/all";
 
       if (filterData?.status) {
         url += `?status=${filterData.status}`;
@@ -43,7 +43,7 @@ export const createProject = createAsyncThunk(
     try {
       const token = localStorage.getItem("jwt");
       const { data } = await axios.post(
-        "http://localhost:8080/api/admin/projects",
+        "https://apislack.a2groups.org/api/admin/projects",
         projectData,
         {
           headers: {
@@ -70,7 +70,7 @@ export const updateProject = createAsyncThunk(
     try {
       const token = localStorage.getItem("jwt");
       const { data } = await axios.put(
-        `http://localhost:8080/api/admin/projects/${projectData.id}`,
+        `https://apislack.a2groups.org/api/admin/projects/${projectData.id}`,
         projectData,
         {
           headers: {
@@ -97,7 +97,7 @@ export const deleteProject = createAsyncThunk(
     try {
       const token = localStorage.getItem("jwt");
       const { data } = await axios.delete(
-        `http://localhost:8080/api/admin/projects/${id}`,
+        `https://apislack.a2groups.org/api/admin/projects/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -122,7 +122,7 @@ export const searchProjects = createAsyncThunk(
       const token = localStorage.getItem("jwt");
 
       const { data } = await axios.get(
-        `http://localhost:8080/api/projects/search?keyword=${keyword}`,
+        `https://apislack.a2groups.org/api/projects/search?keyword=${keyword}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

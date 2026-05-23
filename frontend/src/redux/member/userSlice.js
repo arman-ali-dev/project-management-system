@@ -10,7 +10,7 @@ export const fetchUserProfile = createAsyncThunk(
       const token = localStorage.getItem("jwt");
 
       const { data } = await axios.get(
-        "http://localhost:8080/api/users/profile",
+        "https://apislack.a2groups.org/api/users/profile",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -38,7 +38,7 @@ export const editProfile = createAsyncThunk(
       const token = localStorage.getItem("jwt");
 
       const { data } = await axios.put(
-        "http://localhost:8080/api/users/update",
+        "https://apislack.a2groups.org/api/users/update",
         profileData,
         {
           headers: {

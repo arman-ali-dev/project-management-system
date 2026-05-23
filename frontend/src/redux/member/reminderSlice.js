@@ -8,7 +8,7 @@ export const fetchReminders = createAsyncThunk(
       const token = localStorage.getItem("jwt");
 
       const { data } = await axios.get(
-        "http://localhost:8080/api/tasks/reminders",
+        "https://apislack.a2groups.org/api/tasks/reminders",
         {
           headers: { Authorization: `Bearer ${token}` },
         },

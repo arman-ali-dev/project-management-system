@@ -4,7 +4,7 @@ import Stomp from "stompjs";
 let stompClient = null;
 
 export const connectSocket = (roomId, onMessageReceived) => {
-  const socket = new SockJS("http://localhost:8080/ws");
+  const socket = new SockJS("https://apislack.a2groups.org/ws");
   stompClient = Stomp.over(socket);
 
   const token = localStorage.getItem("jwt");

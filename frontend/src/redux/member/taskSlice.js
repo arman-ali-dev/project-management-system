@@ -7,7 +7,7 @@ export const fetchMyTasks = createAsyncThunk(
     try {
       const token = localStorage.getItem("jwt");
 
-      let url = "http://localhost:8080/api/tasks/my";
+      let url = "https://apislack.a2groups.org/api/tasks/my";
 
       if (filterData?.status) {
         url += `?status=${filterData.status}`;
@@ -40,7 +40,7 @@ export const updateTaskStatus = createAsyncThunk(
       const token = localStorage.getItem("jwt");
 
       const { data } = await axios.patch(
-        `http://localhost:8080/api/tasks/${taskId}/status?status=${status}`,
+        `https://apislack.a2groups.org/api/tasks/${taskId}/status?status=${status}`,
         {},
         {
           headers: {
@@ -68,7 +68,7 @@ export const fetchTasksByProject = createAsyncThunk(
       const token = localStorage.getItem("jwt");
 
       const { data } = await axios.get(
-        `http://localhost:8080/api/tasks/projects/${projectId}`,
+        `https://apislack.a2groups.org/api/tasks/projects/${projectId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -94,7 +94,7 @@ export const fetchTasksCalendar = createAsyncThunk(
       const token = localStorage.getItem("jwt");
 
       const { data } = await axios.get(
-        `http://localhost:8080/api/tasks/calendar?month=${month}&year=${year}`,
+        `https://apislack.a2groups.org/api/tasks/calendar?month=${month}&year=${year}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -120,7 +120,7 @@ export const fetchTasksByDateRange = createAsyncThunk(
       const token = localStorage.getItem("jwt");
 
       const { data } = await axios.get(
-        `http://localhost:8080/api/tasks/calendar/details?month=${month}&year=${year}`,
+        `https://apislack.a2groups.org/api/tasks/calendar/details?month=${month}&year=${year}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

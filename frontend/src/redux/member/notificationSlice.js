@@ -8,7 +8,7 @@ export const fetchNotifications = createAsyncThunk(
       const token = localStorage.getItem("jwt");
 
       const { data } = await axios.get(
-        "http://localhost:8080/api/messages/notifications",
+        "https://apislack.a2groups.org/api/messages/notifications",
         {
           headers: { Authorization: `Bearer ${token}` },
         },

@@ -8,7 +8,7 @@ export const fetchChatRooms = createAsyncThunk(
       const token = localStorage.getItem("jwt");
 
       const { data } = await axios.get(
-        `http://localhost:8080/api/chat/rooms/groups`,
+        `https://apislack.a2groups.org/api/chat/rooms/groups`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

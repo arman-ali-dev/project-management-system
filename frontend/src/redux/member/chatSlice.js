@@ -8,7 +8,7 @@ export const fetchMessages = createAsyncThunk(
       const token = localStorage.getItem("jwt");
 
       const response = await axios.get(
-        `http://localhost:8080/api/messages/${roomId}`,
+        `https://apislack.a2groups.org/api/messages/${roomId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

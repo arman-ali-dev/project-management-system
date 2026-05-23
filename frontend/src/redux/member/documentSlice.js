@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8080/api/documents";
+const BASE_URL = "https://apislack.a2groups.org/api/documents";
 
 const getToken = () => localStorage.getItem("jwt");
 
@@ -46,7 +46,7 @@ export const uploadDocument = createAsyncThunk(
 
       const token = localStorage.getItem("jwt");
       const { data } = await axios.post(
-        `http://localhost:8080/api/documents/upload${folderId ? "?folderId=" + folderId : ""}`,
+        `https://apislack.a2groups.org/api/documents/upload${folderId ? "?folderId=" + folderId : ""}`,
         document,
         {
           headers: {

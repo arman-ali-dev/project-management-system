@@ -43,7 +43,7 @@ public class SpringSecurity {
 
             configuration.setAllowedHeaders(Collections.singletonList("*"));
             configuration.setAllowedMethods(Collections.singletonList("*"));
-            configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+            configuration.setAllowedOrigins(Collections.singletonList("https://connect.a2groups.org"));
             configuration.setAllowCredentials(true);
             configuration.setExposedHeaders(Collections.singletonList("*"));
             configuration.setMaxAge(3600L);
