@@ -24,9 +24,9 @@ public class SpringSecurity {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/health-check").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/api/**", "/health-check").permitAll()
+//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+//                        .requestMatchers("/api/**").authenticated()
                         .requestMatchers("/ws/**").permitAll()
                         .anyRequest().permitAll()
                 )

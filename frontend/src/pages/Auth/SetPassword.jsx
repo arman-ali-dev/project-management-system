@@ -57,7 +57,7 @@ const SetPassword = () =>
             try
             {
                 const { data } = await axios.post(
-                    "http://localhost:8080/auth/set-password",
+                    "https://apislack.a2groups.org//auth/set-password",
                     { password: values.password, token: TOKEN },
                 );
 
