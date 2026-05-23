@@ -16,7 +16,7 @@ const NotFound = () =>
 
             <div className="text-center">
                 <h2 className="text-3xl font-bold text-[#111] mb-3">
-                    Hello! Page Not Found
+                    Oops! Page Not Found
                 </h2>
                 <p className="text-gray-500 max-w-md mx-auto mb-8">
                     It seems you've taken the wrong path.
