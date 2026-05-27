@@ -143,12 +143,9 @@ const KanbanCard = ( { task, idx, currentUserId, userRole } ) =>
 
                                     { task.assignedTo.map( ( member, idx ) => (
                                         <Tooltip title={ member.fullName }>
-                                            <img
-                                                src={ member?.profileImage || userAvatar }
-                                                alt=""
-                                            />
 
-                                            <span className={ `w-8 h-8 cursor-default z-50 relative border-white  border rounded-full object-cover ${ idx !== task.assignedTo.length - 1 ? "-mr-4" : "" }` }
+
+                                            <span className={ `w-8 h-8 bg-black cursor-default z-50 relative border-white  border rounded-full object-cover ${ idx !== task.assignedTo.length - 1 ? "-mr-4" : "" }` }
                                             >
                                                 { member.fullName.charAt( 0 ) }
                                             </span>
