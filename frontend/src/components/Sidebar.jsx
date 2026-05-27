@@ -12,79 +12,6 @@ import logoutIcon from "../assets/logout.png";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/member/authSlice";
 
-// Add this CSS to your global stylesheet:
-/*
-@keyframes sidebarItemIn {
-  from {
-    opacity: 0;
-    transform: translateX(-16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes badgeSlideIn {
-  from {
-    opacity: 0;
-    transform: scale(0.6) translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-.sidebar-item {
-  transition: background 0.18s ease, transform 0.15s ease, box-shadow 0.18s ease;
-  animation: sidebarItemIn 0.3s ease both;
-}
-
-.sidebar-item:hover {
-  background: #e8e8e8 !important;
-  transform: translateX(3px);
-}
-
-.sidebar-item-active {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-}
-
-.sidebar-icon {
-  transition: transform 0.2s ease;
-}
-
-.sidebar-item:hover .sidebar-icon {
-  transform: scale(1.15);
-}
-
-.sidebar-badge {
-  animation: badgeSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-.logout-btn {
-  transition: background 0.18s ease, transform 0.15s ease, box-shadow 0.18s ease;
-}
-
-.logout-btn:hover {
-  background: #e0e0e0 !important;
-  transform: translateX(3px);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-.logout-btn:active {
-  transform: scale(0.97);
-}
-
-.sidebar-logo-icon {
-  transition: transform 0.3s ease;
-}
-
-.sidebar-logo-icon:hover {
-  transform: rotate(10deg) scale(1.05);
-}
-*/
-
 const manu = [
     { label: "Dashboard", icon: chartIcon, path: "/dashboard" },
     { label: "Projects", icon: monitorIcon, path: "/projects" },
@@ -136,7 +63,7 @@ const Sidebar = () =>
                 } }
             >
                 {/* Header */ }
-                <div className="flex items-center gap-12 border-[#efefef] border-r pl-10 pr-14 border-b shadow pt-4 pb-4">
+                <div className="flex items-center gap-12 border-[#efefef] border-r pl-3 pr-14 border-b h-17.25 shadow ">
                     <Link
                         className="text-[21px] font-bold"
                         style={ {
@@ -145,15 +72,19 @@ const Sidebar = () =>
                         onMouseEnter={ e => { e.currentTarget.style.opacity = "0.7"; } }
                         onMouseLeave={ e => { e.currentTarget.style.opacity = "1"; } }
                     >
-                        Dashboard
+                        <img
+                            src="https://a2groups.org/assets/a2glogo-cf360e03.png"
+                            alt="A2 Groups Logo"
+                            className="w-28 h-18 object-contain"
+                        />
                     </Link>
 
-                    <div
+                    {/* <div
                         className="sidebar-logo-icon bg-black h-9 w-9 rounded-xl flex justify-center items-center"
                         style={ { cursor: "pointer" } }
                     >
                         <img className="w-4" src={ layoutIcon } alt="" />
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Nav Items */ }
@@ -193,24 +124,6 @@ const Sidebar = () =>
                                         { item.label }
                                     </span>
                                 </Link>
-                                {/* 
-                                { item.path === "/my-tasks" && (
-                                    <span
-                                        className="sidebar-badge bg-[#FA2626] absolute right-3 top-1/2 -translate-y-1/2 opacity-80 flex justify-center items-center text-[12px] text-white h-7 w-7 rounded-lg"
-                                        style={ { animationDelay: `${ idx * 0.06 + 0.2 }s` } }
-                                    >
-                                        32
-                                    </span>
-                                ) }
-
-                                { item.path === "/chat" && (
-                                    <span
-                                        className="sidebar-badge bg-[#FA2626] absolute right-3 top-1/2 -translate-y-1/2 opacity-80 flex justify-center items-center text-[12px] text-white h-7 w-7 rounded-lg"
-                                        style={ { animationDelay: `${ idx * 0.06 + 0.2 }s` } }
-                                    >
-                                        2
-                                    </span>
-                                ) } */}
                             </li>
                         );
                     } ) }

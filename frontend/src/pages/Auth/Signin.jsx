@@ -80,6 +80,14 @@ const Signin = () =>
                     </IconButton>
 
                     <div className="text-center">
+
+                        {/* Logo */ }
+                        <img
+                            src="https://a2groups.org/assets/a2glogo-cf360e03.png"
+                            alt="A2 Groups Logo"
+                            className="w-20 h-20 object-contain mx-auto mb-4"
+                        />
+
                         <h3 className="text-[#272626] text-[18px] font-semibold">
                             Sign In Your Account
                         </h3>
