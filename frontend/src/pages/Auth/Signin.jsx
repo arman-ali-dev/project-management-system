@@ -89,7 +89,7 @@ const Signin = () =>
                         />
 
                         <h3 className="text-[#272626] text-[18px] font-semibold">
-                            Sign In Your Ownfnkjfgffg Account
+                            Sign In Your Account
                         </h3>
                         <p className="text-[#727272] text-[14px]">
                             Please enter your details to get started
