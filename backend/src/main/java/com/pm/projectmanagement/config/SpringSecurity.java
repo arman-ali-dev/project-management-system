@@ -25,8 +25,8 @@ public class SpringSecurity {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/**", "/health-check").permitAll()
-//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-//                        .requestMatchers("/api/**").authenticated()
+                       .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                       .requestMatchers("/api/**").authenticated()
                         .requestMatchers("/ws/**").permitAll()
                         .anyRequest().permitAll()
                 )
