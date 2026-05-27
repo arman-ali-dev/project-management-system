@@ -30,7 +30,7 @@ public class EmailServiceImpl implements EmailService {
             MimeMessageHelper helper =
                     new MimeMessageHelper(message, true, "UTF-8");
 
-            String resetUrl = "http://localhost:5173/set-password?token=" + token;
+            String resetUrl = "connect.a2groups.org/set-password?token=" + token;
 
             String htmlContent =
                     "<div style='font-family: Arial, sans-serif;'>"
