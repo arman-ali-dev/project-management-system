@@ -9,6 +9,6 @@ public class HealthCheckController {
 
     @GetMapping("/health-check")
     public String healthCheckHandler() {
-        return "Everything is Good!";
+        return "Everything is Okay!";
     }
 }
