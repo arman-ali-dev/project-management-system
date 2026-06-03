@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const BASE = "https://apislack.a2groups.org/";
+const BASE = "https://apislack.a2groups.org";
 
 const getToken = () => localStorage.getItem("jwt");
 
