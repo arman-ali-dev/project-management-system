@@ -11,6 +11,7 @@ import com.pm.projectmanagement.models.User;
 import com.pm.projectmanagement.repositories.TaskRepository;
 import com.pm.projectmanagement.requests.CreateTaskRequest;
 import com.pm.projectmanagement.responses.ReminderResponse;
+import com.pm.projectmanagement.services.EmailService;
 import com.pm.projectmanagement.services.ProjectService;
 import com.pm.projectmanagement.services.TaskService;
 import com.pm.projectmanagement.services.UserService;
@@ -32,15 +33,17 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final ProjectService projectService;
     private final UserService userService;
+    private final EmailService emailService;
 
 
     @Autowired
     public TaskServiceImpl(TaskRepository taskRepository,
                            ProjectService projectService,
-                           UserService userService) {
+                           UserService userService, EmailService emailService) {
         this.taskRepository = taskRepository;
         this.projectService = projectService;
         this.userService = userService;
+        this.emailService = emailService;
     }
 
     @Override
@@ -156,7 +159,14 @@ public class TaskServiceImpl implements TaskService {
         }
 
         task.setStatus(status);
-        return taskRepository.save(task);
+        Task saved = taskRepository.save(task);
+
+        if (!isAdmin) {
+            String adminEmail = "armaanali.dev@gmail.com";
+            emailService.sendTaskStatusChangedEmail(saved, user, adminEmail);
+        }
+
+        return saved;
     }
 
     @Override

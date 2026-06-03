@@ -8,6 +8,8 @@ import attachFileIcon from "../../assets/attach.png";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage, fetchMessages } from "../../redux/member/chatSlice";
 import { uploadToCloudinary } from "../../util/uploadToCloudinary";
+import useDesktopNotification from "../../hooks/useDesktopNotification"; // ← new
+
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 const getMessageType = ( file ) =>
@@ -27,7 +29,6 @@ const ChatContainer = () =>
 
     const [ input, setInput ] = useState( "" );
     const [ uploading, setUploading ] = useState( false );
-
     const [ previewFile, setPreviewFile ] = useState( null );
     const [ previewUrl, setPreviewUrl ] = useState( null );
     const [ previewCaption, setPreviewCaption ] = useState( "" );
@@ -35,6 +36,8 @@ const ChatContainer = () =>
     const clientRef = useRef( null );
     const chatEndRef = useRef( null );
     const fileInputRef = useRef( null );
+
+    const { showNotification } = useDesktopNotification();
 
     useEffect( () =>
     {
@@ -50,15 +53,37 @@ const ChatContainer = () =>
     {
         const token = localStorage.getItem( "jwt" );
         const client = new Client( {
-            webSocketFactory: () => new SockJS( "https://apislack.a2groups.org/ws" ),
+            webSocketFactory: () => new SockJS( "http://localhost:8081/ws" ),
             connectHeaders: { Authorization: `Bearer ${ token }` },
             reconnectDelay: 5000,
             onConnect: () =>
             {
                 client.subscribe( `/topic/room/${ selectedChatRoom?.id }`, ( message ) =>
                 {
+                    console.log( "Message received:", received, "myId:", currentUserId );
                     const received = JSON.parse( message.body );
                     dispatch( addMessage( received ) );
+
+                    if ( received.senderId === currentUserId ) return;
+
+                    // 2. App visible ho aur same room open ho toh skip
+                    const appVisible = !document.hidden;
+                    if ( appVisible ) return;
+
+                    // 3. Notification dikhao
+                    const title = received.senderName || "New Message";
+                    const body =
+                        received.type === "TEXT"
+                            ? received.content
+                            : received.type === "IMAGE"
+                                ? "📷 Sent a photo"
+                                : received.type === "VIDEO"
+                                    ? "🎥 Sent a video"
+                                    : `📄 ${ received.fileName || "Sent a file" }`;
+
+                    showNotification( title, body, {
+                        tag: `chat-room-${ selectedChatRoom?.id }`,
+                    } );
                 } );
             },
             onStompError: ( frame ) =>
@@ -77,13 +102,11 @@ const ChatContainer = () =>
     {
         const file = e.target.files[ 0 ];
         if ( !file ) return;
-
         if ( file.size > MAX_FILE_SIZE )
         {
             alert( "File size must be less than 10 MB" );
             return;
         }
-
         setPreviewFile( file );
         setPreviewUrl( URL.createObjectURL( file ) );
         setPreviewCaption( "" );
@@ -98,7 +121,6 @@ const ChatContainer = () =>
             setUploading( true );
             const fileUrl = await uploadToCloudinary( previewFile );
             const messageType = getMessageType( previewFile );
-
             clientRef.current.publish( {
                 destination: `/app/chat.sendMessage/${ selectedChatRoom?.id }`,
                 body: JSON.stringify( {
@@ -182,11 +204,7 @@ const ChatContainer = () =>
                             disabled={ uploading }
                             className="bg-black px-3 py-2 rounded-md absolute top-1/2 -translate-y-1/2 right-2 disabled:opacity-40"
                         >
-                            <img
-                                src={ sendIcon }
-                                alt="Send"
-                                className="w-4 h-4 filter invert"
-                            />
+                            <img src={ sendIcon } alt="Send" className="w-4 h-4 filter invert" />
                         </button>
                     </form>
                 </div>
@@ -195,41 +213,22 @@ const ChatContainer = () =>
             { previewFile && (
                 <div className="absolute inset-0 bg-black/80 z-50 flex flex-col">
                     <div className="flex items-center justify-between px-4 py-3">
-                        <button
-                            onClick={ closePreview }
-                            className="text-white text-xl font-bold"
-                        >
-                            ✕
-                        </button>
-                        <p className="text-white text-sm font-medium truncate max-w-[60%]">
-                            { previewFile.name }
-                        </p>
-                        <span className="text-white/50 text-xs">
-                            { ( previewFile.size / 1024 ).toFixed( 1 ) } KB
-                        </span>
+                        <button onClick={ closePreview } className="text-white text-xl font-bold">✕</button>
+                        <p className="text-white text-sm font-medium truncate max-w-[60%]">{ previewFile.name }</p>
+                        <span className="text-white/50 text-xs">{ ( previewFile.size / 1024 ).toFixed( 1 ) } KB</span>
                     </div>
 
                     <div className="flex-1 flex items-center justify-center px-4 overflow-hidden">
                         { messageType === "IMAGE" && (
-                            <img
-                                src={ previewUrl }
-                                alt="preview"
-                                className="max-h-full max-w-full rounded-lg object-contain"
-                            />
+                            <img src={ previewUrl } alt="preview" className="max-h-full max-w-full rounded-lg object-contain" />
                         ) }
                         { messageType === "VIDEO" && (
-                            <video
-                                src={ previewUrl }
-                                controls
-                                className="max-h-full max-w-full rounded-lg"
-                            />
+                            <video src={ previewUrl } controls className="max-h-full max-w-full rounded-lg" />
                         ) }
                         { messageType === "FILE" && (
                             <div className="bg-white/10 rounded-xl px-8 py-10 flex flex-col items-center gap-3">
                                 <span className="text-5xl">📄</span>
-                                <p className="text-white text-sm text-center break-all">
-                                    { previewFile.name }
-                                </p>
+                                <p className="text-white text-sm text-center break-all">{ previewFile.name }</p>
                             </div>
                         ) }
                     </div>
@@ -249,11 +248,7 @@ const ChatContainer = () =>
                             { uploading ? (
                                 <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin block" />
                             ) : (
-                                <img
-                                    src={ sendIcon }
-                                    alt="Send"
-                                    className="w-5 h-5 filter invert"
-                                />
+                                <img src={ sendIcon } alt="Send" className="w-5 h-5 filter invert" />
                             ) }
                         </button>
                     </div>

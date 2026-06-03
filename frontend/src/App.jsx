@@ -20,9 +20,11 @@ import { fetchNotifications } from "./redux/member/notificationSlice";
 import PrivateRoute from "./components/PrivateRoutes";
 import AdminRoute from "./components/AdminRoutes";
 import NotFound from "./pages/404/NotFound";
+import useGlobalChat from "./hooks/useGlobalChat";
 
 const App = () =>
 {
+    useGlobalChat();
     const location = useLocation();
     const dispatch = useDispatch();
 

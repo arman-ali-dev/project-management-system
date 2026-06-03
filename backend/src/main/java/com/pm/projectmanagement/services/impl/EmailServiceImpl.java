@@ -1,6 +1,8 @@
 package com.pm.projectmanagement.services.impl;
 
 
+import com.pm.projectmanagement.models.Task;
+import com.pm.projectmanagement.models.User;
 import com.pm.projectmanagement.services.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -55,4 +58,84 @@ public class EmailServiceImpl implements EmailService {
             throw new MailSendException("Failed to send email");
         }
     }
+
+    @Override
+    @Async
+    public void sendTaskStatusChangedEmail(Task task, User changedBy, String adminEmail) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            String statusColor = switch (task.getStatus().toString()) {
+                case "IN_PROGRESS" -> "#E8A020";
+                case "DONE" -> "#09C015";
+                default -> "#497AF5"; // TODO
+            };
+
+            String htmlContent =
+                    "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto;'>"
+
+                            + "<div style='background: #000; padding: 24px 30px; border-radius: 8px 8px 0 0;'>"
+                            + "<h2 style='color: #fff; margin: 0; font-size: 18px;'>Task Status Updated</h2>"
+                            + "<p style='color: #aaa; margin: 4px 0 0; font-size: 13px;'>Project Management System</p>"
+                            + "</div>"
+
+
+                            + "<div style='background: #f9f9f9; padding: 28px 30px; border: 1px solid #eee;'>"
+                            + "<p style='color: #444; font-size: 14px; margin: 0 0 20px;'>Hi Admin,</p>"
+                            + "<p style='color: #444; font-size: 14px; margin: 0 0 20px;'>"
+                            + "A task has been updated by a team member. Here are the details:</p>"
+
+                            + "<div style='background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 20px;'>"
+
+                            + "<div style='margin-bottom: 14px;'>"
+                            + "<span style='font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;'>Task</span>"
+                            + "<p style='font-size: 15px; font-weight: 600; color: #111; margin: 4px 0 0;'>"
+                            + task.getTitle()
+                            + "</p>"
+                            + "</div>"
+
+                            + "<div style='margin-bottom: 14px;'>"
+                            + "<span style='font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;'>New Status</span>"
+                            + "<p style='margin: 6px 0 0;'>"
+                            + "<span style='background: " + statusColor + "22; color: " + statusColor + "; "
+                            + "padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;'>"
+                            + task.getStatus()
+                            + "</span>"
+                            + "</p>"
+                            + "</div>"
+
+                            + "<div>"
+                            + "<span style='font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;'>Updated By</span>"
+                            + "<p style='font-size: 14px; color: #333; margin: 4px 0 0;'>"
+                            + changedBy.getFullName()
+                            + " <span style='color: #999;'>(" + changedBy.getEmail() + ")</span>"
+                            + "</p>"
+                            + "</div>"
+
+                            + "</div>"
+
+                            + "<p style='color: #888; font-size: 12px; margin: 24px 0 0;'>"
+                            + "Please login to review and take action if needed.</p>"
+                            + "</div>"
+
+                            + "<div style='background: #f0f0f0; padding: 14px 30px; border-radius: 0 0 8px 8px; "
+                            + "text-align: center; border: 1px solid #eee; border-top: none;'>"
+                            + "<p style='color: #aaa; font-size: 11px; margin: 0;'>Project Management System &nbsp;|&nbsp; Automated Notification</p>"
+                            + "</div>"
+
+                            + "</div>";
+
+            helper.setTo(adminEmail);
+            helper.setSubject("Task Status Updated: " + task.getTitle());
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+
+        } catch (MessagingException e) {
+            throw new MailSendException("Failed to send task status email");
+        }
+    }
+
+
 }

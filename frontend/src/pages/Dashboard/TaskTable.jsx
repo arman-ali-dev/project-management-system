@@ -147,7 +147,7 @@ const TaskTable = () =>
                             } }
                         >
                             <th className="pb-4 pr-4">Title</th>
-                            <th className="pb-4 px-4">Estimated Time</th>
+                            <th className="pb-4 px-4">Project Name</th>
                             <th className="pb-4 px-4">Assigned Date</th>
                             <th className="pb-4 px-4">Status</th>
                             <th className="pb-4 px-4">Due Date</th>
@@ -224,7 +224,7 @@ const AnimatedTableRow = ( { task, index, visible } ) =>
             </td>
 
             <td className="py-4 px-4 text-[13px] font-medium text-gray-700">
-                { task.estimatedTime } Hours
+                { task.project.name }
             </td>
 
             <td className="py-4 px-4 text-[13px] text-gray-600">
