@@ -9,7 +9,7 @@ import userAvatar from "../../assets/userAvatar.png";
 import { Skeleton } from "@mui/material";
 import { Draggable } from "@hello-pangea/dnd";
 import AddMemberToTaskModal from "./AddMemberToTaskModal";
-import CommentDrawer from "./CommentDrawer";          // ← new
+import CommentDrawer from "./Commentdrawer";          
 
 const KanbanCard = ( { task, idx, currentUserId, userRole } ) =>
 {
