@@ -8,7 +8,7 @@ import attachFileIcon from "../../assets/attach.png";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage, fetchMessages } from "../../redux/member/chatSlice";
 import { uploadToCloudinary } from "../../util/uploadToCloudinary";
-import useDesktopNotification from "../../hooks/useDesktopNotification"; // ← new
+import useDesktopNotification from "../../hooks/Usedesktopnotification"; 
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
