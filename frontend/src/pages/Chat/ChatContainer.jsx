@@ -53,7 +53,7 @@ const ChatContainer = () =>
     {
         const token = localStorage.getItem( "jwt" );
         const client = new Client( {
-            webSocketFactory: () => new SockJS( "http://localhost:8081/ws" ),
+            webSocketFactory: () => new SockJS( "https://apislack.a2groups.org//ws" ),
             connectHeaders: { Authorization: `Bearer ${ token }` },
             reconnectDelay: 5000,
             onConnect: () =>
