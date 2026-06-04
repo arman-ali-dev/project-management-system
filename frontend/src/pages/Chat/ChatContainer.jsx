@@ -181,7 +181,7 @@ const ChatContainer = () =>
                     <div ref={ chatEndRef } />
 
                     { !hasAccess && (
-                        <div className="absolute inset-0 backdrop-blur-sm bg-white/30 flex flex-col items-center justify-center z-10">
+                        <div className="fixed  inset-0 backdrop-blur-sm bg-white/30 flex flex-col items-center justify-center z-10">
                             <div className="bg-white rounded-xl px-6 py-5 shadow-md text-center max-w-xs">
                                 <img className="w-7 h-7 mb-1 mx-auto opacity-80" src={ lockIcon } alt="" />
                                 <p className="text-[14px] font-semibold text-gray-800">
