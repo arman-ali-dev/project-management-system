@@ -176,7 +176,7 @@ const ChatContainer = () =>
 
             <div className="flex-1 flex flex-col min-h-0 pb-4">
 
-                <div className={ `flex-1 px-4 chat-scroll min-h-0 relative ${ hasAccess ? "overflow-y-auto" : "overflow-hidden" }` }>
+               <div className="flex-1 px-4 chat-scroll min-h-0 relative overflow-hidden">
                     <ChatArea messages={ messages } currentUserId={ currentUserId } />
                     <div ref={ chatEndRef } />
 
