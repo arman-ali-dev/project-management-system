@@ -8,7 +8,8 @@ import attachFileIcon from "../../assets/attach.png";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage, fetchMessages } from "../../redux/member/chatSlice";
 import { uploadToCloudinary } from "../../util/uploadToCloudinary";
-import useDesktopNotification from "../../hooks/Usedesktopnotification"; 
+import useDesktopNotification from "../../hooks/useDesktopNotification";
+import lockIcon from '../../assets/lock.png'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
@@ -26,6 +27,14 @@ const ChatContainer = () =>
     const { user } = useSelector( ( state ) => state.user );
     const { selectedChatRoom } = useSelector( ( state ) => state.chatRoom );
     const currentUserId = user?.id;
+
+    // ── Access check ───────────────────────────────────────────────────────────
+    const isAdmin = user?.role === "ADMIN";
+    const isMember = selectedChatRoom?.project?.members?.some(
+        ( m ) => m.id === currentUserId
+    );
+    const hasAccess = isAdmin || isMember;
+    // ──────────────────────────────────────────────────────────────────────────
 
     const [ input, setInput ] = useState( "" );
     const [ uploading, setUploading ] = useState( false );
@@ -53,24 +62,21 @@ const ChatContainer = () =>
     {
         const token = localStorage.getItem( "jwt" );
         const client = new Client( {
-            webSocketFactory: () => new SockJS( "https://apislack.a2groups.org/ws" ),
+            webSocketFactory: () => new SockJS( "http://localhost:8081/ws" ),
             connectHeaders: { Authorization: `Bearer ${ token }` },
             reconnectDelay: 5000,
             onConnect: () =>
             {
                 client.subscribe( `/topic/room/${ selectedChatRoom?.id }`, ( message ) =>
                 {
-                    console.log( "Message received:", received, "myId:", currentUserId );
                     const received = JSON.parse( message.body );
                     dispatch( addMessage( received ) );
 
                     if ( received.senderId === currentUserId ) return;
 
-                    // 2. App visible ho aur same room open ho toh skip
                     const appVisible = !document.hidden;
                     if ( appVisible ) return;
 
-                    // 3. Notification dikhao
                     const title = received.senderName || "New Message";
                     const body =
                         received.type === "TEXT"
@@ -152,7 +158,7 @@ const ChatContainer = () =>
     const handleSubmit = ( e ) =>
     {
         e.preventDefault();
-        if ( !input.trim() ) return;
+        if ( !input.trim() || !hasAccess ) return;
         clientRef.current.publish( {
             destination: `/app/chat.sendMessage/${ selectedChatRoom?.id }`,
             body: JSON.stringify( {
@@ -171,42 +177,68 @@ const ChatContainer = () =>
             <ChatHeader />
 
             <div className="flex-1 flex flex-col min-h-0 pb-4">
-                <div className="flex-1 overflow-y-auto px-4 chat-scroll min-h-0">
+
+                {/* ── Chat area ── */ }
+                <div className="flex-1 overflow-y-auto px-4 chat-scroll min-h-0 relative">
                     <ChatArea messages={ messages } currentUserId={ currentUserId } />
                     <div ref={ chatEndRef } />
+
+                    {/* ── Blur overlay — non members ke liye ── */ }
+                    { !hasAccess && (
+                        <div className="absolute inset-0 backdrop-blur-sm bg-white/30 flex flex-col items-center justify-center z-10">
+                            <div className="bg-white rounded-xl px-6 py-5 shadow-md text-center max-w-xs">
+                                <img className="w-7 h-7 mb-1 mx-auto opacity-80" src={ lockIcon } alt="" />
+                                <p className="text-[14px] font-semibold text-gray-800">
+                                    Restricted Access
+                                </p>
+                                <p className="text-[12px] text-gray-500 mt-1">
+                                    Only project members can view this chat.
+                                </p>
+                            </div>
+                        </div>
+                    ) }
                 </div>
 
+                {/* ── Input ── */ }
                 <div className="pt-3 px-4">
-                    <form className="relative" onSubmit={ handleSubmit }>
-                        <input
-                            value={ input }
-                            onChange={ ( e ) => setInput( e.target.value ) }
-                            type="text"
-                            placeholder={ uploading ? "Uploading..." : "Write Message..." }
-                            disabled={ uploading }
-                            className="text-[13px] outline-0 border border-gray-300 w-full py-2.5 pl-10 pr-12 rounded-md disabled:opacity-60"
-                        />
-                        <input
-                            ref={ fileInputRef }
-                            type="file"
-                            accept="image/*,video/*,application/pdf,.doc,.docx,.zip"
-                            className="hidden"
-                            onChange={ handleFileChange }
-                        />
-                        <img
-                            src={ attachFileIcon }
-                            alt="Attach"
-                            onClick={ () => !uploading && fileInputRef.current?.click() }
-                            className={ `absolute top-1/2 -translate-y-1/2 left-4 w-4 h-4 cursor-pointer ${ uploading ? "opacity-40" : "" }` }
-                        />
-                        <button
-                            type="submit"
-                            disabled={ uploading }
-                            className="bg-black px-3 py-2 rounded-md absolute top-1/2 -translate-y-1/2 right-2 disabled:opacity-40"
-                        >
-                            <img src={ sendIcon } alt="Send" className="w-4 h-4 filter invert" />
-                        </button>
-                    </form>
+                    { !hasAccess ? (
+                        <div className="flex items-center gap-2 border border-gray-200 rounded-md px-4 py-2.5 bg-gray-50 cursor-not-allowed">
+                            <span className="text-gray-400 text-[13px] flex gap-1 items-center">
+                                <img className="w-4 h-4 opacity-60" src={ lockIcon } alt="" /> You cannot send messages in this chat.
+                            </span>
+                        </div>
+                    ) : (
+                        <form className="relative" onSubmit={ handleSubmit }>
+                            <input
+                                value={ input }
+                                onChange={ ( e ) => setInput( e.target.value ) }
+                                type="text"
+                                placeholder={ uploading ? "Uploading..." : "Write Message..." }
+                                disabled={ uploading }
+                                className="text-[13px] outline-0 border border-gray-300 w-full py-2.5 pl-10 pr-12 rounded-md disabled:opacity-60"
+                            />
+                            <input
+                                ref={ fileInputRef }
+                                type="file"
+                                accept="image/*,video/*,application/pdf,.doc,.docx,.zip"
+                                className="hidden"
+                                onChange={ handleFileChange }
+                            />
+                            <img
+                                src={ attachFileIcon }
+                                alt="Attach"
+                                onClick={ () => !uploading && fileInputRef.current?.click() }
+                                className={ `absolute top-1/2 -translate-y-1/2 left-4 w-4 h-4 cursor-pointer ${ uploading ? "opacity-40" : "" }` }
+                            />
+                            <button
+                                type="submit"
+                                disabled={ uploading }
+                                className="bg-black px-3 py-2 rounded-md absolute top-1/2 -translate-y-1/2 right-2 disabled:opacity-40"
+                            >
+                                <img src={ sendIcon } alt="Send" className="w-4 h-4 filter invert" />
+                            </button>
+                        </form>
+                    ) }
                 </div>
             </div>
 

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { addMessage } from "../redux/member/chatSlice";
-import useDesktopNotification from "./Usedesktopnotification";
+import useDesktopNotification from "./useDesktopNotification";
 
 const useGlobalChat = () =>
 {
@@ -23,12 +23,14 @@ const useGlobalChat = () =>
         const token = localStorage.getItem( "jwt" );
 
         const client = new Client( {
-            webSocketFactory: () => new SockJS( "https://apislack.a2groups.org/ws" ),
+            webSocketFactory: () => new SockJS( "http://localhost:8081/ws" ),
             connectHeaders: { Authorization: `Bearer ${ token }` },
             reconnectDelay: 5000,
 
             onConnect: () =>
             {
+                console.log( "Global WS connected, userId:", currentUserId );
+
                 chatRooms.forEach( ( room ) =>
                 {
                     client.subscribe( `/topic/room/${ room.id }`, ( message ) =>
@@ -54,6 +56,22 @@ const useGlobalChat = () =>
                         } );
                     } );
                 } );
+
+                client.subscribe(
+                    `/topic/task-status/${ currentUserId }`,
+                    ( message ) =>
+                    {
+                        console.log( "Task status event received:", message.body );
+
+                        const event = JSON.parse( message.body );
+
+                        showNotification(
+                            ` Task Status Updated`,
+                            `"${ event.taskTitle }" is now ${ event.newStatus } — by ${ event.changedByName }`,
+                            { tag: `task-status-${ event.taskId }` }
+                        );
+                    }
+                );
             },
 
             onStompError: ( frame ) =>

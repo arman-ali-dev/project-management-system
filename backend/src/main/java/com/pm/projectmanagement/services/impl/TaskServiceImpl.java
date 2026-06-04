@@ -11,12 +11,14 @@ import com.pm.projectmanagement.models.User;
 import com.pm.projectmanagement.repositories.TaskRepository;
 import com.pm.projectmanagement.requests.CreateTaskRequest;
 import com.pm.projectmanagement.responses.ReminderResponse;
+import com.pm.projectmanagement.responses.TaskStatusEvent;
 import com.pm.projectmanagement.services.EmailService;
 import com.pm.projectmanagement.services.ProjectService;
 import com.pm.projectmanagement.services.TaskService;
 import com.pm.projectmanagement.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
@@ -34,16 +36,21 @@ public class TaskServiceImpl implements TaskService {
     private final ProjectService projectService;
     private final UserService userService;
     private final EmailService emailService;
+    private final SimpMessagingTemplate messagingTemplate;
+
 
 
     @Autowired
     public TaskServiceImpl(TaskRepository taskRepository,
                            ProjectService projectService,
-                           UserService userService, EmailService emailService) {
+                           UserService userService,
+                           EmailService emailService,
+                           SimpMessagingTemplate messagingTemplate) {
         this.taskRepository = taskRepository;
         this.projectService = projectService;
         this.userService = userService;
         this.emailService = emailService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Override
@@ -146,7 +153,6 @@ public class TaskServiceImpl implements TaskService {
         Task task = this.getTask(id);
 
         boolean isAdmin = user.getRole() == UserRole.ADMIN;
-
         boolean isAssignedUser = task.getAssignedTo() != null &&
                 task.getAssignedTo()
                         .stream()
@@ -162,9 +168,32 @@ public class TaskServiceImpl implements TaskService {
         Task saved = taskRepository.save(task);
 
         if (!isAdmin) {
-            String adminEmail = "armaanali.dev@gmail.com";
+            String adminEmail = "ankit.samant.ahec@gmail.com";
             emailService.sendTaskStatusChangedEmail(saved, user, adminEmail);
         }
+
+        TaskStatusEvent event = TaskStatusEvent.builder()
+                .taskId(saved.getId())
+                .taskTitle(saved.getTitle())
+                .newStatus(saved.getStatus().toString())
+                .changedByName(user.getFullName())
+                .build();
+
+        saved.getAssignedTo().forEach(assignedUser -> {
+            if (assignedUser.getId().equals(user.getId())) return;
+
+
+            System.out.println("Sending WS event to user: " + assignedUser.getId()); // ← add karo
+
+
+            messagingTemplate.convertAndSend(
+                    "/topic/task-status/" + assignedUser.getId(),
+                    event
+            );
+
+// Iske baad yeh add karo
+            System.out.println("Event sent to topic: /topic/task-status/" + assignedUser.getId());
+        });
 
         return saved;
     }
