@@ -164,19 +164,7 @@ const ChatContainer = () => {
                 <div className="flex-1 px-4 chat-scroll min-h-0 absolute overflow-hidden min-w-full w-full">
                     <ChatArea messages={messages} currentUserId={currentUserId} />
                     <div ref={chatEndRef} />
-                    {!hasAccess && (
-                        <div className="absolute inset-0 backdrop-blur-sm bg-white/30 flex flex-col items-center justify-center z-10">
-                            <div className="bg-white rounded-xl px-6 py-5 shadow-md text-center max-w-xs">
-                                <img className="w-7 h-7 mb-1 mx-auto opacity-80" src={lockIcon} alt="" />
-                                <p className="text-[14px] font-semibold text-gray-800">
-                                    Restricted Access
-                                </p>
-                                <p className="text-[12px] text-gray-500 mt-1">
-                                    Only project members can view this chat.
-                                </p>
-                            </div>
-                        </div>
-                    )}
+                  
                 </div>
 
                 <div className="pt-3 px-4">
@@ -219,6 +207,20 @@ const ChatContainer = () => {
                         </form>
                     )}
                 </div>
+
+                  {!hasAccess && (
+                        <div className="absolute inset-0 backdrop-blur-sm bg-white/30 flex flex-col items-center justify-center z-10">
+                            <div className="bg-white rounded-xl px-6 py-5 shadow-md text-center max-w-xs">
+                                <img className="w-7 h-7 mb-1 mx-auto opacity-80" src={lockIcon} alt="" />
+                                <p className="text-[14px] font-semibold text-gray-800">
+                                    Restricted Access
+                                </p>
+                                <p className="text-[12px] text-gray-500 mt-1">
+                                    Only project members can view this chat.
+                                </p>
+                            </div>
+                        </div>
+                    )}
             </div>
 
             {previewFile && (
