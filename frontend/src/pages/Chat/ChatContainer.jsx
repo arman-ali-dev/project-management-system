@@ -28,13 +28,11 @@ const ChatContainer = () =>
     const { selectedChatRoom } = useSelector( ( state ) => state.chatRoom );
     const currentUserId = user?.id;
 
-    // ── Access check ───────────────────────────────────────────────────────────
     const isAdmin = user?.role === "ADMIN";
     const isMember = selectedChatRoom?.project?.members?.some(
         ( m ) => m.id === currentUserId
     );
     const hasAccess = isAdmin || isMember;
-    // ──────────────────────────────────────────────────────────────────────────
 
     const [ input, setInput ] = useState( "" );
     const [ uploading, setUploading ] = useState( false );
@@ -62,7 +60,7 @@ const ChatContainer = () =>
     {
         const token = localStorage.getItem( "jwt" );
         const client = new Client( {
-            webSocketFactory: () => new SockJS( "http://localhost:8081/ws" ),
+            webSocketFactory: () => new SockJS( "https://apislack.a2groups.org//ws" ),
             connectHeaders: { Authorization: `Bearer ${ token }` },
             reconnectDelay: 5000,
             onConnect: () =>
@@ -178,12 +176,10 @@ const ChatContainer = () =>
 
             <div className="flex-1 flex flex-col min-h-0 pb-4">
 
-                {/* ── Chat area ── */ }
-                <div className="flex-1 overflow-y-auto px-4 chat-scroll min-h-0 relative">
+                <div className={ `flex-1 px-4 chat-scroll min-h-0 relative ${ hasAccess ? "overflow-y-auto" : "overflow-hidden" }` }>
                     <ChatArea messages={ messages } currentUserId={ currentUserId } />
                     <div ref={ chatEndRef } />
 
-                    {/* ── Blur overlay — non members ke liye ── */ }
                     { !hasAccess && (
                         <div className="absolute inset-0 backdrop-blur-sm bg-white/30 flex flex-col items-center justify-center z-10">
                             <div className="bg-white rounded-xl px-6 py-5 shadow-md text-center max-w-xs">
@@ -199,7 +195,6 @@ const ChatContainer = () =>
                     ) }
                 </div>
 
-                {/* ── Input ── */ }
                 <div className="pt-3 px-4">
                     { !hasAccess ? (
                         <div className="flex items-center gap-2 border border-gray-200 rounded-md px-4 py-2.5 bg-gray-50 cursor-not-allowed">
