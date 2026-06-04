@@ -156,72 +156,65 @@ const ChatContainer = () => {
     
 
     return (
-        <div className="h-full w-full flex flex-col relative">
-            <ChatHeader />
+    <div className="h-full w-full flex flex-col relative">
+    <ChatHeader />
 
-            <div className="flex-1 flex flex-col min-h-0 pb-4 relative">
-
-                <div className="flex-1 px-4 chat-scroll min-h-0 absolute overflow-hidden min-w-full w-full">
-                    <ChatArea messages={messages} currentUserId={currentUserId} />
-                    <div ref={chatEndRef} />
-                  
+    { !hasAccess ? (
+        // ── RESTRICTED layout ─────────────────────────────────────────────
+        <div className="flex-1 flex flex-col items-center justify-center relative">
+            {/* Blurred chat background */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="px-4 opacity-40 blur-sm">
+                    <ChatArea messages={ messages } currentUserId={ currentUserId } />
                 </div>
-
-                <div className="pt-3 px-4">
-                    {!hasAccess ? (
-                        <div className="flex items-center gap-2 border border-gray-200 rounded-md px-4 py-2.5 bg-gray-50 cursor-not-allowed">
-                            <span className="text-gray-400 text-[13px] flex gap-1 items-center">
-                                <img className="w-4 h-4 opacity-60" src={lockIcon} alt="" /> You cannot send messages in this chat.
-                            </span>
-                        </div>
-                    ) : (
-                        <form className="relative" onSubmit={handleSubmit}>
-                            <input
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                type="text"
-                                placeholder={uploading ? "Uploading..." : "Write Message..."}
-                                disabled={uploading}
-                                className="text-[13px] outline-0 border border-gray-300 w-full py-2.5 pl-10 pr-12 rounded-md disabled:opacity-60"
-                            />
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*,video/*,application/pdf,.doc,.docx,.zip"
-                                className="hidden"
-                                onChange={handleFileChange}
-                            />
-                            <img
-                                src={attachFileIcon}
-                                alt="Attach"
-                                onClick={() => !uploading && fileInputRef.current?.click()}
-                                className={`absolute top-1/2 -translate-y-1/2 left-4 w-4 h-4 cursor-pointer ${uploading ? "opacity-40" : ""}`}
-                            />
-                            <button
-                                type="submit"
-                                disabled={uploading}
-                                className="bg-black px-3 py-2 rounded-md absolute top-1/2 -translate-y-1/2 right-2 disabled:opacity-40"
-                            >
-                                <img src={sendIcon} alt="Send" className="w-4 h-4 filter invert" />
-                            </button>
-                        </form>
-                    )}
-                </div>
-
-                  {!hasAccess && (
-                        <div className="absolute inset-0 backdrop-blur-sm bg-white/30 flex flex-col items-center justify-center z-10">
-                            <div className="bg-white rounded-xl px-6 py-5 shadow-md text-center max-w-xs">
-                                <img className="w-7 h-7 mb-1 mx-auto opacity-80" src={lockIcon} alt="" />
-                                <p className="text-[14px] font-semibold text-gray-800">
-                                    Restricted Access
-                                </p>
-                                <p className="text-[12px] text-gray-500 mt-1">
-                                    Only project members can view this chat.
-                                </p>
-                            </div>
-                        </div>
-                    )}
             </div>
+
+            {/* Lock card */}
+            <div className="relative z-10 bg-white rounded-xl px-6 py-5 shadow-md text-center max-w-xs">
+                <img className="w-7 h-7 mb-1 mx-auto opacity-80" src={ lockIcon } alt="" />
+                <p className="text-[14px] font-semibold text-gray-800">Restricted Access</p>
+                <p className="text-[12px] text-gray-500 mt-1">Only project members can view this chat.</p>
+            </div>
+
+            {/* Locked input */}
+            <div className="absolute bottom-0 left-0 right-0 pt-3 px-4 pb-4">
+                <div className="flex items-center gap-2 border border-gray-200 rounded-md px-4 py-2.5 bg-gray-50 cursor-not-allowed">
+                    <span className="text-gray-400 text-[13px] flex gap-1 items-center">
+                        <img className="w-4 h-4 opacity-60" src={ lockIcon } alt="" />
+                        You cannot send messages in this chat.
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    ) : (
+        // ── NORMAL layout — bilkul pehle jaisa ───────────────────────────
+        <div className="flex-1 flex flex-col min-h-0 pb-4">
+            <div className="flex-1 overflow-y-auto px-4 chat-scroll min-h-0">
+                <ChatArea messages={ messages } currentUserId={ currentUserId } />
+                <div ref={ chatEndRef } />
+            </div>
+
+            <div className="pt-3 px-4">
+                <form className="relative" onSubmit={ handleSubmit }>
+                    <input
+                        value={ input }
+                        onChange={ ( e ) => setInput( e.target.value ) }
+                        type="text"
+                        placeholder={ uploading ? "Uploading..." : "Write Message..." }
+                        disabled={ uploading }
+                        className="text-[13px] outline-0 border border-gray-300 w-full py-2.5 pl-10 pr-12 rounded-md disabled:opacity-60"
+                    />
+                    <input ref={ fileInputRef } type="file" accept="image/*,video/*,application/pdf,.doc,.docx,.zip" className="hidden" onChange={ handleFileChange } />
+                    <img src={ attachFileIcon } alt="Attach" onClick={ () => !uploading && fileInputRef.current?.click() }
+                        className={ `absolute top-1/2 -translate-y-1/2 left-4 w-4 h-4 cursor-pointer ${ uploading ? "opacity-40" : "" }` } />
+                    <button type="submit" disabled={ uploading } className="bg-black px-3 py-2 rounded-md absolute top-1/2 -translate-y-1/2 right-2 disabled:opacity-40">
+                        <img src={ sendIcon } alt="Send" className="w-4 h-4 filter invert" />
+                    </button>
+                </form>
+            </div>
+        </div>
+    ) }
 
             {previewFile && (
                 <div className="absolute inset-0 bg-black/80 z-50 flex flex-col">
