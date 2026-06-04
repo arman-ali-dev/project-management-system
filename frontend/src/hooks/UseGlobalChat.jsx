@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { addMessage } from "../redux/member/chatSlice";
-import useDesktopNotification from "./useDesktopNotification";
+import useDesktopNotification from "./Usedesktopnotification";
 
 const useGlobalChat = () =>
 {
