@@ -11,17 +11,22 @@ import
 } from "../../redux/member/taskSlice";
 import { useDispatch } from "react-redux";
 import ViewTaskDetailsModal from "./ViewTaskDetailsModal";
+import CommentDrawer from "../Kanban/CommentDrawer";
 
-const Task = ( { task, isDragging = false } ) =>
+const Task = ( { task, isDragging = false, currentUserId, userRole } ) =>
 {
     const dispatch = useDispatch();
+
     const [ filterAnchorEl, setFilterAnchorEl ] = React.useState( null );
     const openFilterDropDown = Boolean( filterAnchorEl );
+
     const [ hovered, setHovered ] = useState( false );
     const [ openDetailsModal, setOpenDetailsModal ] = React.useState( false );
+    const [ commentOpen, setCommentOpen ] = React.useState( false );
 
     const handleClick = ( e ) => setFilterAnchorEl( e.currentTarget );
     const handleCloseFilterDropDown = () => setFilterAnchorEl( null );
+
     const handleOpenDetailsModal = () => setOpenDetailsModal( true );
     const handleCloseDetailsModal = () => setOpenDetailsModal( false );
 
@@ -72,7 +77,6 @@ const Task = ( { task, isDragging = false } ) =>
                         : hovered
                             ? "0 4px 14px rgba(0,0,0,0.08)"
                             : "none",
-                    // NO transform here — DnD owns all transforms on the wrapper
                     transition: isDragging
                         ? "none"
                         : "background-color 0.18s ease, box-shadow 0.2s ease",
@@ -88,6 +92,7 @@ const Task = ( { task, isDragging = false } ) =>
                             transition: "opacity 0.2s",
                         } }
                     />
+
                     <p
                         className="text-[13px] font-medium"
                         style={ { color: hovered ? "#000" : "#222" } }
@@ -97,16 +102,21 @@ const Task = ( { task, isDragging = false } ) =>
                 </div>
 
                 <p className="text-[13px] text-gray-500 hidden sm:block">
-                    { task.description.split( " " ).slice( 0, 7 ).join( " " ) }
-                    { task.description.split( " " ).length > 5 ? "..." : "" }
+                    { task.project?.name }
                 </p>
 
-                <p
-                    className="text-[11px] flex items-center gap-1.5 font-medium"
-                    style={ { opacity: hovered ? 1 : 0.7, transition: "opacity 0.2s" } }
+                <button
+                    type="button"
+                    onClick={ () => setCommentOpen( true ) }
+                    className="text-[11px] flex items-center gap-1.5 font-medium cursor-pointer hover:opacity-70"
+                    style={ {
+                        opacity: hovered ? 1 : 0.7,
+                        transition: "opacity 0.2s",
+                    } }
                 >
-                    <img src={ messageIcon } alt="" className="w-3.5" />3 Conversations
-                </p>
+                    <img src={ messageIcon } alt="" className="w-3.5" />
+                    3 Conversations
+                </button>
 
                 <div className="flex">
                     { task.assignedTo?.slice( 0, 2 ).map( ( u ) => (
@@ -180,14 +190,16 @@ const Task = ( { task, isDragging = false } ) =>
                                         updateTaskStatusLocal( {
                                             taskId: task.id,
                                             status: nextStatus.value,
-                                        } ),
+                                        } )
                                     );
+
                                     dispatch(
                                         updateTaskStatus( {
                                             taskId: task.id,
                                             status: nextStatus.value,
-                                        } ),
+                                        } )
                                     );
+
                                     handleCloseFilterDropDown();
                                 } }
                             >
@@ -202,6 +214,14 @@ const Task = ( { task, isDragging = false } ) =>
                 task={ task }
                 open={ openDetailsModal }
                 handleClose={ handleCloseDetailsModal }
+            />
+
+            <CommentDrawer
+                open={ commentOpen }
+                onClose={ () => setCommentOpen( false ) }
+                task={ task }
+                currentUserId={ currentUserId }
+                userRole={ userRole }
             />
         </>
     );

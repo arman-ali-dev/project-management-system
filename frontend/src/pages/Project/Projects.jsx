@@ -4,13 +4,14 @@ import plusIcon from "../../assets/plus.png";
 import filterIcon from "../../assets/filter.png";
 import ProjectCard, { ProjectCardSkeleton } from "./ProjectCard";
 import AddProjectForm from "./AddProjectForm";
-import { Divider, IconButton, Menu, MenuItem } from "@mui/material";
+import { Divider, IconButton, Menu, MenuItem, Tooltip } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProjects, searchProjects } from "../../redux/admin/projectSlice";
 
 const Projects = () =>
 {
     const dispatch = useDispatch();
+    const { user } = useSelector( ( state ) => state.user );
     const [ status, setStatus ] = useState( null );
     const [ priority, setPriority ] = useState( null );
     const [ search, setSearch ] = useState( "" );
@@ -138,7 +139,7 @@ const Projects = () =>
                         className="flex gap-2 items-center bg-[#EFEFEF] px-3 rounded-lg"
                         style={ { minWidth: 220 } }
                     >
-                        <div className="h-8 w-8 flex justify-center items-center flex-shrink-0">
+                        <div className="h-8 w-8 flex justify-center items-center shrink-0">
                             <img className="w-3" src={ searchIcon } alt="" />
                         </div>
                         <input
@@ -219,28 +220,47 @@ const Projects = () =>
                             ) }
                         </Menu>
 
-                        <IconButton
-                            onClick={ ( e ) =>
-                            {
-                                e.stopPropagation();
-                                toggleDrawer( true )( e );
-                            } }
-                            sx={ {
-                                width: 36,
-                                height: 36,
-                                backgroundColor: "#EFEFEF",
-                                borderRadius: "8px",
-                                transition:
-                                    "background 0.18s ease, transform 0.2s ease !important",
-                                "&:hover": {
-                                    backgroundColor: "#e0e0e0 !important",
-                                    transform: "scale(1.06) !important",
-                                },
-                                "&:active": { transform: "scale(0.93) !important" },
-                            } }
+                        <Tooltip
+                            title={
+                                user?.role === "MEMBER"
+                                    ? "Only Admin can create projects"
+                                    : "Create Project"
+                            }
                         >
-                            <img className="w-3.5" src={ plusIcon } alt="" />
-                        </IconButton>
+                            <span>
+                                <IconButton
+                                    disabled={ user?.role === "MEMBER" }
+                                    onClick={ ( e ) =>
+                                    {
+                                        if ( user?.role === "MEMBER" ) return;
+
+                                        e.stopPropagation();
+                                        toggleDrawer( true )( e );
+                                    } }
+                                    sx={ {
+                                        width: 36,
+                                        height: 36,
+                                        backgroundColor: "#EFEFEF",
+                                        borderRadius: "8px",
+                                        transition:
+                                            "background 0.18s ease, transform 0.2s ease !important",
+                                        opacity: user?.role === "MEMBER" ? 0.5 : 1,
+                                        "&:hover": {
+                                            backgroundColor:
+                                                user?.role === "MEMBER"
+                                                    ? "#EFEFEF"
+                                                    : "#e0e0e0 !important",
+                                            transform:
+                                                user?.role === "MEMBER"
+                                                    ? "none"
+                                                    : "scale(1.06) !important",
+                                        },
+                                    } }
+                                >
+                                    <img className="w-3.5" src={ plusIcon } alt="" />
+                                </IconButton>
+                            </span>
+                        </Tooltip>
                     </div>
                 </div>
 

@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,8 +47,6 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Project createProject(Project project) {
 
-
-
         List<User> managedMembers = new ArrayList<>();
 
         for (User member : project.getMembers()) {
@@ -55,6 +55,9 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         project.setMembers(managedMembers);
+
+        String orderId = generateOrderId(project.getName());
+        project.setOrderId(orderId);
 
         Project savedProject = projectRepository.save(project);
 
@@ -67,7 +70,6 @@ public class ProjectServiceImpl implements ProjectService {
 
         return savedProject;
     }
-
     @Override
     public Project getProject(Long id) {
         return projectRepository.findById(id)
@@ -165,5 +167,27 @@ public class ProjectServiceImpl implements ProjectService {
             );
         }
         return projectRepository.searchProjects(keyword);
+    }
+
+
+    private String generateOrderId(String projectName) {
+
+        String prefix = projectName
+                .replaceAll("[^a-zA-Z0-9]", "")
+                .toUpperCase();
+
+        if (prefix.length() >= 4) {
+            prefix = prefix.substring(0, 4);
+        } else {
+            prefix = String.format("%-4s", prefix).replace(' ', 'X');
+        }
+
+        String date = LocalDate.now()
+                .format(DateTimeFormatter.ofPattern("dd-MM-yy"));
+
+        long nextNumber = projectRepository.count() + 1;
+
+        return prefix + "-" + date + "_" +
+                String.format("%02d", nextNumber);
     }
 }

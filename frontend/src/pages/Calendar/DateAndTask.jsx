@@ -73,6 +73,17 @@ const DateAndTask = ( { date, isPrevMonth, hasTask, taskCount, tasks, monthYear 
                                                     { task.description }
                                                 </p>
                                             ) }
+
+                                            { task.project?.name && (
+                                                <div className="mb-3">
+                                                    <span className="text-[12px] text-gray-500 font-medium">
+                                                        Project:
+                                                    </span>
+                                                    <span className="text-[13px] text-black font-semibold ml-1">
+                                                        { task.project.name }
+                                                    </span>
+                                                </div>
+                                            ) }
                                             <div className="flex gap-3 items-center flex-wrap">
                                                 { task.status && (
                                                     <span

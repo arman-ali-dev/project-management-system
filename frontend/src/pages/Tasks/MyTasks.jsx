@@ -40,7 +40,6 @@ const useDragPortal = () =>
     return portalRef.current;
 };
 
-// Wrap each Draggable child so it renders into the portal while dragging
 const PortalAwareDraggable = ( { children, provided, snapshot } ) =>
 {
     const portal = useDragPortal();
@@ -54,7 +53,6 @@ const PortalAwareDraggable = ( { children, provided, snapshot } ) =>
     return child;
 };
 
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
 const TaskSkeleton = () => (
     <div className="space-y-2">
         { [ 1, 2, 3 ].map( ( i ) => (
@@ -76,10 +74,10 @@ const TaskSkeleton = () => (
     </div>
 );
 
-// ─── Section ──────────────────────────────────────────────────────────────────
 const TaskSection = ( { sectionId, label, color, bg, tasks, loading, mounted, sectionIndex } ) =>
 {
     const [ isDragOver, setIsDragOver ] = useState( false );
+    const { user } = useSelector( ( state ) => state.user )
 
     return (
         <div
@@ -108,7 +106,6 @@ const TaskSection = ( { sectionId, label, color, bg, tasks, loading, mounted, se
                 </span>
             </div>
 
-            {/* Body */ }
             { loading ? <TaskSkeleton /> : (
                 <Droppable droppableId={ sectionId }>
                     { ( provided, snapshot ) =>
@@ -145,18 +142,17 @@ const TaskSection = ( { sectionId, label, color, bg, tasks, loading, mounted, se
                                                     ref={ provided.innerRef }
                                                     { ...provided.draggableProps }
                                                     { ...provided.dragHandleProps }
-                                                    // Keep DnD's style intact — only add borderRadius
+
                                                     style={ {
                                                         ...provided.draggableProps.style,
                                                         borderRadius: 12,
                                                     } }
                                                 >
-                                                    <Task task={ task } isDragging={ snapshot.isDragging } />
+                                                    <Task task={ task } isDragging={ snapshot.isDragging } currentUserId={ user.id } userRole={ user.role } />
                                                 </div>
                                             );
 
-                                            // Portal: render dragging item on document.body to escape
-                                            // any overflow:hidden / CSS transform on parent containers
+
                                             if ( snapshot.isDragging )
                                             {
                                                 return ReactDOM.createPortal(
@@ -171,7 +167,7 @@ const TaskSection = ( { sectionId, label, color, bg, tasks, loading, mounted, se
                                                             filter: "drop-shadow(0 16px 32px rgba(0,0,0,0.22))",
                                                         } }
                                                     >
-                                                        <Task task={ task } isDragging={ true } />
+                                                        <Task task={ task } isDragging={ true } currentUserId={ user.id } userRole={ user.role } />
                                                     </div>,
                                                     document.body
                                                 );
@@ -207,7 +203,6 @@ const TaskSection = ( { sectionId, label, color, bg, tasks, loading, mounted, se
     );
 };
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
 const MyTasks = () =>
 {
     const dispatch = useDispatch();
@@ -238,6 +233,7 @@ const MyTasks = () =>
         dispatch( updateTaskStatusLocal( { taskId: draggableId, status: destination.droppableId } ) );
         dispatch( updateTaskStatus( { taskId: draggableId, status: destination.droppableId } ) );
     };
+
 
     return (
         // DragDropContext must NOT be inside a CSS-transformed element.

@@ -12,92 +12,14 @@ import { useNavigate } from "react-router-dom";
 import CreateNewTaskForm from "../pages/Dashboard/CreateNewTaskForm";
 import { useSelector } from "react-redux";
 
-// Add this CSS to your global stylesheet or a <style> tag:
-/*
-@keyframes fadeSlideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes badgePop {
-  0%   { transform: scale(0.5); opacity: 0; }
-  70%  { transform: scale(1.2); }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-.dropdown {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08);
-  transform-origin: top right;
-}
-
-.dropdown.show {
-  display: block;
-  animation: fadeSlideDown 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.nav-icon-btn {
-  transition: background 0.18s ease, transform 0.15s ease, box-shadow 0.18s ease;
-}
-
-.nav-icon-btn:hover {
-  background: #e0e0e0 !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.10);
-}
-
-.nav-icon-btn:active {
-  transform: scale(0.93);
-}
-
-.badge-dot {
-  animation: badgePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-.search-input-wrap {
-  transition: box-shadow 0.2s ease, background 0.2s ease;
-  border-radius: 10px;
-}
-
-.search-input-wrap:focus-within {
-  box-shadow: 0 0 0 2px rgba(21, 127, 215, 0.25);
-  background: #f5f5f5;
-}
-
-.avatar-btn {
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-}
-
-.avatar-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-}
-
-.notification-row {
-  transition: background 0.15s ease;
-}
-
-.notification-row:hover {
-  background: #d4d4d4 !important;
-}
-*/
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faArrowsRotate, faClipboard } from "@fortawesome/free-solid-svg-icons";
 
 const Navbar = () =>
 {
     const [ open, setOpen ] = useState( false );
 
-    const { reminders, loading } = useSelector( state => state.reminder );
+    const { reminders } = useSelector( state => state.reminder );
     const { notifications } = useSelector( ( state ) => state.notification );
 
     const toggleDrawer = ( value ) => ( event ) =>
@@ -105,10 +27,7 @@ const Navbar = () =>
         if (
             event.type === "keydown" &&
             ( event.key === "Tab" || event.key === "Shift" )
-        )
-        {
-            return;
-        }
+        ) return;
         setOpen( value );
     };
 
@@ -147,17 +66,14 @@ const Navbar = () =>
                 setShowReminders( false );
             }
         };
-
         document.addEventListener( "mousedown", handleClickOutside );
-
-        return () =>
-        {
-            document.removeEventListener( "mousedown", handleClickOutside );
-        };
+        return () => document.removeEventListener( "mousedown", handleClickOutside );
     }, [] );
 
     const { isAuthenticated } = useSelector( ( state ) => state.auth );
     const { user } = useSelector( ( state ) => state.user );
+
+    const unreadCount = notifications.filter( n => !n.read ).length;
 
     return (
         <>
@@ -174,20 +90,11 @@ const Navbar = () =>
                     style={ { minWidth: 200 } }
                 >
                     <div className="flex justify-center items-center">
-                        <img
-                            className="w-3"
-                            src={ searchIcon }
-                            alt=""
-                            style={ { transition: "opacity 0.2s", opacity: 0.6 } }
-                        />
+                        <img className="w-3" src={ searchIcon } alt="" style={ { transition: "opacity 0.2s", opacity: 0.6 } } />
                     </div>
                     <input
                         className="border-0 mt-1 outline-0 text-[13px] placeholder:text-[13px] bg-transparent w-full"
-                        style={ {
-                            color: "#000",
-                            opacity: 0.8,
-                            transition: "opacity 0.2s",
-                        } }
+                        style={ { color: "#000", opacity: 0.8, transition: "opacity 0.2s" } }
                         type="text"
                         placeholder="Search here..."
                     />
@@ -213,10 +120,8 @@ const Navbar = () =>
                                                 transform: showReminders ? "rotate(-15deg) scale(1.1)" : "rotate(0deg) scale(1)",
                                             } }
                                         />
-                                        { reminders?.length !== 0 && (
-                                            <span
-                                                className="badge-dot bg-[#FA2626] absolute -top-0.5 -right-1 opacity-80 flex justify-center items-center text-[9px] text-white h-3.5 w-3.5 rounded-full"
-                                            >
+                                        { reminders?.length > 0 && (
+                                            <span className="badge-dot bg-[#FA2626] absolute -top-0.5 -right-1 opacity-80 flex justify-center items-center text-[9px] text-white h-3.5 w-3.5 rounded-full">
                                                 { reminders?.length }
                                             </span>
                                         ) }
@@ -228,9 +133,7 @@ const Navbar = () =>
                                     className={ `dropdown ${ showReminders ? "show" : "" } bg-[#EFEFEF] z-999 max-w-73.5 h-77.5 w-65 absolute` }
                                 >
                                     <div className="border-b border-b-[#ccc] px-3 py-1.25">
-                                        <p className="text-black text-[14px] font-semibold">
-                                            Task Reminders
-                                        </p>
+                                        <p className="text-black text-[14px] font-semibold">Task Reminders</p>
                                     </div>
 
                                     { reminders.slice( 0, 4 ).map( ( elem, index ) => (
@@ -243,25 +146,14 @@ const Navbar = () =>
                                             } }
                                         >
                                             <div>
-                                                <p className="text-black font-semibold capitalize text-[14px]">
-                                                    { elem.title }
-                                                </p>
-                                                <p className="text-[#333333] text-[12px] -mt-1 font-medium">
-                                                    { elem.message }
-                                                </p>
-                                                <p className="text-[#666666] text-[13px] mt-1 font-medium">
-                                                    { elem.dueDate }
-                                                </p>
+                                                <p className="text-black font-semibold capitalize text-[14px]">{ elem.title }</p>
+                                                <p className="text-[#333333] text-[12px] -mt-1 font-medium">{ elem.message }</p>
+                                                <p className="text-[#666666] text-[13px] mt-1 font-medium">{ elem.dueDate }</p>
                                             </div>
                                             <div>
-                                                <p
-                                                    className={ `text-white inline-block text-[11px] px-1.5 absolute top-0 right-0 ${ elem.priority === "OVERDUE"
-                                                        ? "bg-[rgba(250,38,38,.8)]"
-                                                        : elem.priority === "TODAY"
-                                                            ? "bg-[#18A322]"
-                                                            : "bg-[#157FD7]"
-                                                        }` }
-                                                >
+                                                <p className={ `text-white inline-block text-[11px] px-1.5 absolute top-0 right-0 ${ elem.priority === "OVERDUE" ? "bg-[rgba(250,38,38,.8)]" :
+                                                    elem.priority === "TODAY" ? "bg-[#18A322]" : "bg-[#157FD7]"
+                                                    }` }>
                                                     { elem.priority }
                                                 </p>
                                             </div>
@@ -286,9 +178,10 @@ const Navbar = () =>
                                                 transform: showNotifications ? "rotate(20deg) scale(1.1)" : "rotate(0deg) scale(1)",
                                             } }
                                         />
-                                        { notifications.filter( n => n.status === "New" ).length !== 0 && (
+                                        {/* Badge — unread count */ }
+                                        { unreadCount > 0 && (
                                             <span className="badge-dot bg-[#FA2626] absolute -top-0.5 -right-1 opacity-80 flex justify-center items-center text-[9px] text-white h-3.5 w-3.5 rounded-full">
-                                                { notifications.filter( n => n.status === "New" ).length }
+                                                { unreadCount > 9 ? "9+" : unreadCount }
                                             </span>
                                         ) }
                                     </div>
@@ -298,57 +191,73 @@ const Navbar = () =>
                                     ref={ notificationRef }
                                     className={ `dropdown ${ showNotifications ? "show" : "" } bg-[#EFEFEF] z-999 max-w-73.5 h-77.5 w-65 absolute` }
                                 >
+                                    {/* Header */ }
                                     <div className="border-b border-b-[#ccc] px-3 py-1.25">
                                         <p className="text-black text-[14px] font-semibold">
-                                            { notifications.filter( n => n.status === "New" ).length } new messages
+                                            { unreadCount } new notification{ unreadCount !== 1 ? "s" : "" }
                                         </p>
                                     </div>
 
-                                    { notifications.slice( 0, 4 ).map( ( elem, index ) => (
-                                        <div
-                                            key={ index }
-                                            className={ `notification-row flex relative p-2.5 border-b border-b-[#e1e8ed] gap-3 items-start ${ index % 2 !== 0 ? "bg-[#dadada]" : "" }` }
-                                            style={ {
-                                                animation: showNotifications ? `fadeSlideDown 0.2s ease ${ index * 0.05 }s both` : "none",
-                                            } }
-                                        >
-                                            <div>
-                                                <img
-                                                    className="min-w-8 object-cover min-h-8 w-8 h-8 rounded-full"
-                                                    src={ elem.profileUrl || userAvatar }
-                                                    alt=""
-                                                    style={ { transition: "transform 0.2s ease" } }
-                                                />
+                                    {/* List */ }
+                                    { notifications.length === 0 ? (
+                                        <p className="text-center text-[12px] text-gray-400 py-8">No notifications yet</p>
+                                    ) : (
+                                        notifications.slice( 0, 4 ).map( ( elem, index ) => (
+                                            <div
+                                                key={ elem.id || index }
+                                                className={ `notification-row flex relative p-2.5 border-b border-b-[#e1e8ed] gap-3 items-start ${ index % 2 !== 0 ? "bg-[#dadada]" : "" }` }
+                                                style={ {
+                                                    animation: showNotifications ? `fadeSlideDown 0.2s ease ${ index * 0.05 }s both` : "none",
+                                                } }
+                                            >
+                                                {/* Avatar / Icon */ }
+                                                <div>
+                                                    { elem.type === "TASK_STATUS" ? (
+                                                        <div className={ `min-w-8 min-h-8 w-8 h-8 rounded-full flex items-center justify-center text-white text-[13px] ${ elem.newStatus === "DONE" ? "bg-[#09C015]" :
+                                                            elem.newStatus === "IN_PROGRESS" ? "bg-[#E8A020]" : "bg-[#497AF5]"
+                                                            }` }>
+                                                            <FontAwesomeIcon
+                                                                icon={
+                                                                    elem.newStatus === "DONE" ? faCheck :
+                                                                        elem.newStatus === "IN_PROGRESS" ? faArrowsRotate : faClipboard
+                                                                }
+                                                            />
+                                                        </div>
+                                                    ) : (
+                                                        <img
+                                                            className="min-w-8 object-cover min-h-8 w-8 h-8 rounded-full"
+                                                            src={ elem.profileUrl || userAvatar }
+                                                            alt=""
+                                                        />
+                                                    ) }
+                                                </div>
+
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-black font-semibold capitalize text-[13px] truncate">
+                                                        { elem.title || elem.username }
+                                                    </p>
+                                                    <p className="text-[#333333] text-[11px] font-medium leading-tight">
+                                                        { elem.body || elem.message }
+                                                    </p>
+                                                    <p className="text-[#666666] text-[11px] mt-0.5 font-medium">
+                                                        { elem.createdAt
+                                                            ? new Date( elem.createdAt ).toLocaleTimeString( [], { hour: "2-digit", minute: "2-digit" } )
+                                                            : elem.time }
+                                                    </p>
+                                                </div>
+
+                                                {/* Badge */ }
+                                                <p className={ `text-white inline-block text-[10px] px-1.5 py-0.5 rounded absolute top-1 right-1 ${ elem.type === "TASK_STATUS" ? "bg-[#157FD7]" :
+                                                    !elem.read ? "bg-[#18A322]" : "bg-[#888]"
+                                                    }` }>
+                                                    { elem.type === "TASK_STATUS" ? "Task" : "Chat" }
+                                                </p>
                                             </div>
-                                            <div>
-                                                <p className="text-black font-semibold capitalize text-[14px]">
-                                                    { elem.username }
-                                                </p>
-                                                <p className="text-[#333333] text-[12px] -mt-1 font-medium">
-                                                    { elem.message }
-                                                </p>
-                                                <p className="text-[#666666] text-[13px] mt-1 font-medium">
-                                                    { elem.time }
-                                                </p>
-                                            </div>
-                                            <div>
-                                                <p
-                                                    className={ `text-white inline-block text-[11px] px-1.5 absolute top-0 right-0 ${ elem.status === "New"
-                                                        ? "bg-[#18A322]"
-                                                        : elem.status === "Reply"
-                                                            ? "bg-[rgba(250,38,38,.8)]"
-                                                            : "bg-[#157FD7]"
-                                                        }` }
-                                                >
-                                                    { elem.status }
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ) ) }
+                                        ) )
+                                    ) }
 
                                     <div className="absolute bottom-0 w-full">
                                         <Button
-                                            onClick={ () => navigate( "/chat" ) }
                                             sx={ {
                                                 width: "100%",
                                                 color: "black",
@@ -358,9 +267,7 @@ const Navbar = () =>
                                                 textTransform: "capitalize",
                                                 borderRadius: "0px",
                                                 transition: "background 0.18s ease !important",
-                                                "&:hover": {
-                                                    backgroundColor: "#c8c8c8 !important",
-                                                },
+                                                "&:hover": { backgroundColor: "#c8c8c8 !important" },
                                             } }
                                         >
                                             <span className="font-medium">View More</span>
@@ -370,21 +277,20 @@ const Navbar = () =>
                             </div>
 
                             {/* Create Task */ }
-                            <Tooltip title="Create Task">
+                            <Tooltip title={ user?.role === "MEMBER" ? "Only Admin can create tasks" : "Create Task" }>
                                 <div
                                     onClick={ ( e ) =>
                                     {
+                                        if ( user?.role === "MEMBER" ) return;
                                         e.stopPropagation();
                                         toggleDrawer( true )( e );
                                     } }
-                                    className="nav-icon-btn w-9 cursor-pointer h-9 bg-[#EFEFEF] rounded-lg flex justify-center items-center"
+                                    className={ `w-9 h-9 rounded-lg flex justify-center items-center ${ user?.role === "MEMBER"
+                                        ? "bg-[#EFEFEF] opacity-50 cursor-not-allowed"
+                                        : "nav-icon-btn bg-[#EFEFEF] cursor-pointer"
+                                        }` }
                                 >
-                                    <img
-                                        className="w-3.5"
-                                        src={ plusIcon }
-                                        alt=""
-                                        style={ { transition: "transform 0.2s ease" } }
-                                    />
+                                    <img className="w-3.5" src={ plusIcon } alt="" />
                                 </div>
                             </Tooltip>
                         </div>
@@ -397,12 +303,7 @@ const Navbar = () =>
                                     <Avatar
                                         src={ user?.profileImage == null ? userAvatar : user.profileImage }
                                         alt="User Profile"
-                                        sx={ {
-                                            width: 35,
-                                            height: 35,
-                                            cursor: "pointer",
-                                            objectFit: "cover",
-                                        } }
+                                        sx={ { width: 35, height: 35, cursor: "pointer", objectFit: "cover" } }
                                     />
                                 </div>
                             </Tooltip>

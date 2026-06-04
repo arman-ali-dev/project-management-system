@@ -26,6 +26,9 @@ public class Project {
     @NotNull
     private String name;
 
+    @Column(name = "order_id", unique = true, nullable = false)
+    private String orderId;
+
     @NotNull
     @Column(columnDefinition = "TEXT")
     private String description;

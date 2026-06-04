@@ -57,6 +57,7 @@ const rootReducer = combineReducers({
 const rootPersistConfig = {
   key: "pm",
   storage,
+  blacklist: ["loading"],
 };
 
 const persistedReducer = persistReducer(rootPersistConfig, rootReducer);

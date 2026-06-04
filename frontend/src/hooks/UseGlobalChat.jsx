@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { addMessage } from "../redux/member/chatSlice";
+import { addNotification } from "../redux/member/notificationSlice";
 import useDesktopNotification from "./Usedesktopnotification";
 
 const useGlobalChat = () =>
@@ -37,23 +38,38 @@ const useGlobalChat = () =>
                     {
                         const received = JSON.parse( message.body );
 
+                        console.log( "Full message:", received ); // ← poora object dekho
+
                         dispatch( addMessage( received ) );
 
-                        if ( received.senderId === currentUserId ) return;
 
-                        const title = received.senderName || room.name || "New Message";
-                        const body =
-                            received.type === "TEXT"
-                                ? received.content
-                                : received.type === "IMAGE"
-                                    ? "📷 Sent a photo"
-                                    : received.type === "VIDEO"
-                                        ? "🎥 Sent a video"
-                                        : `📄 ${ received.fileName || "Sent a file" }`;
+                        if ( received.sender.id == currentUserId ) return;
 
-                        showNotification( title, body, {
-                            tag: `chat-room-${ room.id }`,
-                        } );
+                        const notifBody =
+                            received.type === "TEXT" ? received.content :
+                                received.type === "IMAGE" ? "📷 Sent a photo" :
+                                    received.type === "VIDEO" ? "🎥 Sent a video" :
+                                        `📄 ${ received.fileName || "Sent a file" }`;
+
+                        const notifTitle = received.sender.fullName || room.name || "New Message";
+
+                        dispatch( addNotification( {
+                            id: Date.now(),
+                            type: "CHAT",
+                            title: notifTitle,
+                            body: notifBody,
+                            roomId: room.id,
+                            roomName: room.name,
+                            createdAt: new Date().toISOString(),
+                            read: false,
+                        } ) );
+
+                        if ( document.hidden )
+                        {
+                            showNotification( notifTitle, notifBody, {
+                                tag: `chat-room-${ room.id }`,
+                            } );
+                        }
                     } );
                 } );
 
@@ -62,14 +78,28 @@ const useGlobalChat = () =>
                     ( message ) =>
                     {
                         console.log( "Task status event received:", message.body );
-
                         const event = JSON.parse( message.body );
 
-                        showNotification(
-                            ` Task Status Updated`,
-                            `"${ event.taskTitle }" is now ${ event.newStatus } — by ${ event.changedByName }`,
-                            { tag: `task-status-${ event.taskId }` }
-                        );
+
+                        const title = `Task Status Updated`;
+                        const body = `"${ event.taskTitle }" is now ${ event.newStatus } - by ${ event.changedByName }`;
+
+                        // Redux notification store
+                        dispatch( addNotification( {
+                            id: Date.now(),
+                            type: "TASK_STATUS",
+                            title,
+                            body,
+                            taskId: event.taskId,
+                            taskTitle: event.taskTitle,
+                            newStatus: event.newStatus,
+                            createdAt: new Date().toISOString(),
+                            read: false,
+                        } ) );
+
+                        showNotification( title, body, {
+                            tag: `task-status-${ event.taskId }`,
+                        } );
                     }
                 );
             },

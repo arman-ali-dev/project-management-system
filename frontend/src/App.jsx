@@ -3,7 +3,7 @@ import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Projects from "./pages/Project/Projects";
 import KanbanBoard from "./pages/Kanban/KanbanBoard";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import MyTasks from "./pages/Tasks/MyTasks";
 import Calendar from "./pages/Calendar/Calendar";
 import Chat from "./pages/Chat/Chat";
@@ -20,7 +20,7 @@ import { fetchNotifications } from "./redux/member/notificationSlice";
 import PrivateRoute from "./components/PrivateRoutes";
 import AdminRoute from "./components/AdminRoutes";
 import NotFound from "./pages/404/NotFound";
-import useGlobalChat from "./hooks/UseGlobalChat";
+import useGlobalChat from "./hooks/useGlobalChat";
 
 const App = () =>
 {
@@ -67,6 +67,12 @@ const App = () =>
                     { !hideLayout && <Navbar /> }
                     <div className="flex-1 overflow-y-auto">
                         <Routes>
+
+                            <Route
+                                path="/"
+                                element={ <Navigate to="/projects" replace /> }
+                            />
+
                             <Route
                                 path="/dashboard"
                                 element={
