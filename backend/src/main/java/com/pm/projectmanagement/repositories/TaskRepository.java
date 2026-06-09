@@ -37,10 +37,13 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             LocalDate endDate,
             User user
     );
+
     @Query("""
-        SELECT t FROM Task t
-        WHERE :user MEMBER OF t.assignedTo
-        AND t.status != 'DONE'
-    """)
+                SELECT t FROM Task t
+                WHERE :user MEMBER OF t.assignedTo
+                AND t.status != 'DONE'
+            """)
     List<Task> findUserActiveTasks(User user);
+
+    List<Task> findByAssignedToId(Long userId);
 }
