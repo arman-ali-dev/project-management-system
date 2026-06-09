@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const BASE = "http://localhost:8081";
+const BASE = "https://apislack.a2groups.org";
 
 export const getMyScore = createAsyncThunk(
   "score/getMyScore",
