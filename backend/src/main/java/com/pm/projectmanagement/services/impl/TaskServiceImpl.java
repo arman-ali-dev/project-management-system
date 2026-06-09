@@ -176,7 +176,7 @@ public class TaskServiceImpl implements TaskService {
         Task saved = taskRepository.save(task);
 
         if (!isAdmin) {
-            String adminEmail = "armaanali.dev@gmail.com";
+            String adminEmail = "ankit.samant.ahec@gmail.com";
             emailService.sendTaskStatusChangedEmail(saved, user, adminEmail);
         }
 
