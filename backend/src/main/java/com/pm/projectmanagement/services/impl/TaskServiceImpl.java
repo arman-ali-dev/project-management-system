@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -165,10 +166,17 @@ public class TaskServiceImpl implements TaskService {
         }
 
         task.setStatus(status);
+
+        if (status == TaskStatus.DONE) {
+            task.setCompletedAt(LocalDateTime.now());
+        } else {
+            task.setCompletedAt(null);
+        }
+
         Task saved = taskRepository.save(task);
 
         if (!isAdmin) {
-            String adminEmail = "ankit.samant.ahec@gmail.com";
+            String adminEmail = "armaanali.dev@gmail.com";
             emailService.sendTaskStatusChangedEmail(saved, user, adminEmail);
         }
 

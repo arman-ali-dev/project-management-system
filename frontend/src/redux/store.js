@@ -11,6 +11,7 @@ import chatRoomSlice from "./member/chatRoomSlice";
 import reminderSlice from "./member/reminderSlice";
 import notificationSlice from "./member/notificationSlice";
 import commentSlice from "./member/commentSlice";
+import scoreReducer from "./member/scoreSlice";
 
 import adminUserReducer from "./admin/userSlice";
 import adminProjectReducer from "./admin/projectSlice";
@@ -47,6 +48,7 @@ const rootReducer = combineReducers({
   reminder: reminderSlice,
   notification: notificationSlice,
   comments: commentSlice,
+  score: scoreReducer,
 
   // ADMIN
   adminUser: adminUserReducer,

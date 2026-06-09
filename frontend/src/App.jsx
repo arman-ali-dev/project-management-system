@@ -21,6 +21,7 @@ import PrivateRoute from "./components/PrivateRoutes";
 import AdminRoute from "./components/AdminRoutes";
 import NotFound from "./pages/404/NotFound";
 import useGlobalChat from "./hooks/UseGlobalChat";
+import ScoreDashboard from "./pages/ScoreDashboard/ScoreDashboard";
 
 const App = () =>
 {
@@ -43,7 +44,7 @@ const App = () =>
 
     const validPaths = [
         "/dashboard", "/projects", "/my-tasks", "/calendar",
-        "/chat", "/drive", "/users", "/profile"
+        "/chat", "/drive", "/users", "/profile", "/scores"
     ];
 
     const isNotFoundPage = !validPaths.includes( location.pathname ) &&
@@ -145,6 +146,9 @@ const App = () =>
                                     </PrivateRoute>
                                 }
                             />
+
+                            <Route path="/scores" element={ <ScoreDashboard /> } />
+
                             <Route path="/signin" element={ <Signin /> } />
                             <Route path="/set-password" element={ <SetPassword /> } />
                             <Route path="/*" element={ <NotFound /> } />

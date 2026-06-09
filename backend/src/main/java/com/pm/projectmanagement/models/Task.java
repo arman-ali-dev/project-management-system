@@ -81,4 +81,7 @@ public class Task {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    // Task.java mein add karo
+    private LocalDateTime completedAt;
+
 }

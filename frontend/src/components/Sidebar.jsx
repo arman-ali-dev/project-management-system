@@ -9,6 +9,7 @@ import chatIcon from "../assets/chat.png";
 import driveIcon from "../assets/drive.png";
 import usersIcon from "../assets/users.png";
 import logoutIcon from "../assets/logout.png";
+import scoreIcon from "../assets/score.png";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/member/authSlice";
 
@@ -20,6 +21,7 @@ const manu = [
     { label: "Chat", icon: chatIcon, path: "/chat" },
     { label: "Drive", icon: driveIcon, path: "/drive" },
     { label: "Users", icon: usersIcon, path: "/users" },
+    { label: "Scores", icon: scoreIcon, path: "/scores" },
 ];
 
 const Sidebar = () =>
