@@ -40,4 +40,13 @@ public class MessageController {
         return new ResponseEntity<>(notifications, HttpStatus.OK);
     }
 
+    @DeleteMapping("/notifications")
+    public ResponseEntity<String> clearNotifications(
+            @RequestHeader("Authorization") String jwt
+    ) {
+        User user = userService.getUserProfile(jwt);
+        messageService.clearNotifications(user);
+        return ResponseEntity.ok("Notifications cleared");
+    }
+
 }
