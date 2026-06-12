@@ -29,15 +29,17 @@ public class UserServiceImpl implements UserService {
     private final PasswordSetTokenRepository passwordSetTokenRepository;
     private final JwtProvider jwtProvider;
     private final EmailService emailService;
+    private final TaskRepository taskRepository;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            PasswordSetTokenRepository passwordSetTokenRepository,
-                           JwtProvider jwtProvider, EmailService emailService) {
+                           JwtProvider jwtProvider, EmailService emailService, TaskRepository taskRepository) {
         this.userRepository = userRepository;
         this.passwordSetTokenRepository = passwordSetTokenRepository;
         this.jwtProvider = jwtProvider;
         this.emailService = emailService;
+        this.taskRepository = taskRepository;
     }
 
     @Override
@@ -78,10 +80,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Long id) {
-        User user = this.getUserById(id);
-        userRepository.delete(user);
+public void deleteUser(Long userId) {
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    List<Task> tasks = taskRepository.findAll();
+
+    for (Task task : tasks) {
+        if (task.getAssignedTo() != null) {
+            task.getAssignedTo().removeIf(u -> u.getId().equals(userId));
+            taskRepository.save(task);
+        }
     }
+
+    userRepository.delete(user);
+}
 
     @Override
     public List<User> getAllUsers() {
