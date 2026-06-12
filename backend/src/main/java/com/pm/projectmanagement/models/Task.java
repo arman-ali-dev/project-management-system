@@ -53,7 +53,7 @@ public class Task {
     @JoinColumn(name = "project_id")
     private Project project;
 
- @ManyToMany
+@ManyToMany
 @JoinTable(
         name = "task_assigned_to",
         joinColumns = @JoinColumn(name = "task_id"),
