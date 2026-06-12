@@ -6,6 +6,7 @@ import com.pm.projectmanagement.enums.UserStatus;
 import com.pm.projectmanagement.exceptions.AlreadyExistsException;
 import com.pm.projectmanagement.exceptions.NotFoundException;
 import com.pm.projectmanagement.models.PasswordSetToken;
+import com.pm.projectmanagement.models.Task;
 import com.pm.projectmanagement.models.User;
 import com.pm.projectmanagement.repositories.PasswordSetTokenRepository;
 import com.pm.projectmanagement.repositories.TaskRepository;
