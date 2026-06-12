@@ -22,17 +22,14 @@ public class ChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // GROUP or PRIVATE
     @Enumerated(EnumType.STRING)
     private ChatType type;
 
-    // For project chat
     @OneToOne
     @JoinColumn(name = "project_id")
     private Project project;
 
-    // For private chat (2 users)
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "chat_room_users",
             joinColumns = @JoinColumn(name = "chat_room_id"),
