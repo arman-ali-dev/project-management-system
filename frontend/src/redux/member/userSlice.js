@@ -8,7 +8,7 @@ export const fetchUserProfile = createAsyncThunk(
       console.log("fetching2....");
       const token = localStorage.getItem("jwt");
       const { data } = await axios.get(
-        "http://localhost:8081/api/users/profile",
+        "https://apislack.a2groups.org/api/users/profile",
         { headers: { Authorization: `Bearer ${token}` } },
       );
       console.log("User Data: ", data);
@@ -27,7 +27,7 @@ export const editProfile = createAsyncThunk(
     try {
       const token = localStorage.getItem("jwt");
       const { data } = await axios.put(
-        "http://localhost:8081/api/users/update",
+        "https://apislack.a2groups.org/api/users/update",
         profileData,
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -44,7 +44,7 @@ export const fetchAllUsers = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("jwt");
-      const { data } = await axios.get("http://localhost:8081/api/users/all", {
+      const { data } = await axios.get("https://apislack.a2groups.org/api/users/all", {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log("Fetched users successfully", data);
