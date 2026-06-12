@@ -7,7 +7,7 @@ export const fetchUsers = createAsyncThunk(
     try {
       const token = localStorage.getItem("jwt");
 
-      let url = "https://apislack.a2groups.org/api/admin/users/all";
+      let url = "http://localhost:8081/api/admin/users/all";
 
       if (status) {
         url += `?status=${status}`;
@@ -37,7 +37,7 @@ export const createUser = createAsyncThunk(
     try {
       const token = localStorage.getItem("jwt");
       const { data } = await axios.post(
-        "https://apislack.a2groups.org/api/admin/users",
+        "http://localhost:8081/api/admin/users",
         userData,
         {
           headers: {
@@ -64,7 +64,7 @@ export const deleteUser = createAsyncThunk(
     try {
       const token = localStorage.getItem("jwt");
       const { data } = await axios.delete(
-        `https://apislack.a2groups.org/api/admin/users/${id}`,
+        `http://localhost:8081/api/admin/users/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -89,7 +89,7 @@ export const searchUsers = createAsyncThunk(
       const token = localStorage.getItem("jwt");
 
       const { data } = await axios.get(
-        `https://apislack.a2groups.org/api/admin/users/search?keyword=${keyword}`,
+        `http://localhost:8081/api/admin/users/search?keyword=${keyword}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
