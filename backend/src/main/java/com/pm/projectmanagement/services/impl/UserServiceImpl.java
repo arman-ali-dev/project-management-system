@@ -8,6 +8,7 @@ import com.pm.projectmanagement.exceptions.NotFoundException;
 import com.pm.projectmanagement.models.PasswordSetToken;
 import com.pm.projectmanagement.models.User;
 import com.pm.projectmanagement.repositories.PasswordSetTokenRepository;
+import com.pm.projectmanagement.repositories.TaskRepository;
 import com.pm.projectmanagement.repositories.UserRepository;
 import com.pm.projectmanagement.requests.CreateUserRequest;
 import com.pm.projectmanagement.services.EmailService;
