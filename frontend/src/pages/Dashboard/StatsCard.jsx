@@ -13,7 +13,6 @@ const useCountUp = ( target, duration = 1200, start = false ) =>
         {
             if ( !startTime ) startTime = timestamp;
             const progress = Math.min( ( timestamp - startTime ) / duration, 1 );
-            // Ease out cubic
             const eased = 1 - Math.pow( 1 - progress, 3 );
             setCount( Math.floor( eased * target ) );
             if ( progress < 1 ) requestAnimationFrame( step );
@@ -100,18 +99,20 @@ const StatsCard = ( { icon, iconBg, statusIcon, label, num, delay = 0 } ) =>
                     { animatedNum }
                 </p>
 
-                <span
-                    className="flex gap-1 items-center py-0.5 px-3 rounded-full text-[11px] font-medium"
-                    style={ {
-                        backgroundColor: "rgba(1,255,18,0.15)",
-                        color: "#1C8F24",
-                        transform: hovered ? "scale(1.05)" : "scale(1)",
-                        transition: "transform 0.2s ease",
-                    } }
-                >
-                    <img src={ statusIcon } className="w-3 h-3" alt="" />
-                    32.54%
-                </span>
+                { num > 0 && (
+                    <span
+                        className="flex gap-1 items-center py-0.5 px-3 rounded-full text-[11px] font-medium"
+                        style={ {
+                            backgroundColor: "rgba(1,255,18,0.15)",
+                            color: "#1C8F24",
+                            transform: hovered ? "scale(1.05)" : "scale(1)",
+                            transition: "transform 0.2s ease",
+                        } }
+                    >
+                        <img src={ statusIcon } className="w-3 h-3" alt="" />
+                        Active
+                    </span>
+                ) }
             </div>
 
             {/* Subtle bottom accent line */ }

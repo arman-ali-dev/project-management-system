@@ -36,16 +36,15 @@ const MessageContent = ( { msg } ) =>
 
         case "FILE":
             return (
-                <Link
-                    to={ msg.content }
+                <a href={ msg.content }
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center gap-2 text-blue-600 underline text-[12px]"
                 >
                     <span>📎</span>
                     <span>{ msg.fileName || "Download File" }</span>
-                </Link>
-            );
+                </a>
+            )
 
         default: // TEXT
             return <p className="text-[12px]">{ msg.content }</p>;

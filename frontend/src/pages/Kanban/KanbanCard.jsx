@@ -9,10 +9,12 @@ import userAvatar from "../../assets/userAvatar.png";
 import { Skeleton } from "@mui/material";
 import { Draggable } from "@hello-pangea/dnd";
 import AddMemberToTaskModal from "./AddMemberToTaskModal";
-import CommentDrawer from "./Commentdrawer";          
+import CommentDrawer from "./Commentdrawer"; // ← new
 
 const KanbanCard = ( { task, idx, currentUserId, userRole } ) =>
 {
+    const [ hovered, setHovered ] = useState( false );
+
     const [ addMemberOpen, setAddMemberOpen ] = useState( false );
     const [ commentOpen, setCommentOpen ] = useState( false );
 
@@ -42,7 +44,7 @@ const KanbanCard = ( { task, idx, currentUserId, userRole } ) =>
                                 <span>
                                     { new Date( task.dueDate.split( "T" )[ 0 ] ).toLocaleDateString(
                                         "en-US",
-                                        { month: "short", day: "numeric", year: "numeric" }
+                                        { month: "short", day: "numeric", year: "numeric" },
                                     ) }
                                 </span>
                                 <span> | </span>
@@ -76,7 +78,6 @@ const KanbanCard = ( { task, idx, currentUserId, userRole } ) =>
                                 >
                                     { task.category }
                                 </div>
-
                             </div>
 
                             <p className="text-[13px] font-medium mt-2.5">
@@ -87,7 +88,11 @@ const KanbanCard = ( { task, idx, currentUserId, userRole } ) =>
                             <div className="mt-4 flex items-center justify-between">
                                 <div className="flex gap-3 items-center">
                                     <div className="flex gap-1.5 items-center">
-                                        <img src={ teamIcon } alt="team icon" className="w-4.5 h-4.5" />
+                                        <img
+                                            src={ teamIcon }
+                                            alt="team icon"
+                                            className="w-4.5 h-4.5"
+                                        />
                                         <span className="text-[#969696] text-[11px]">
                                             { task.assignedTo.length }
                                         </span>
@@ -98,8 +103,11 @@ const KanbanCard = ( { task, idx, currentUserId, userRole } ) =>
                                             onClick={ () => setCommentOpen( true ) }
                                             className="flex gap-1.5 items-center hover:opacity-70 transition-opacity"
                                         >
-                                            <img src={ messageIcon } alt="message icon" className="w-3 h-3" />
-
+                                            <img
+                                                src={ messageIcon }
+                                                alt="message icon"
+                                                className="w-3 h-3"
+                                            />
                                         </button>
                                     </Tooltip>
                                 </div>
@@ -123,14 +131,21 @@ const KanbanCard = ( { task, idx, currentUserId, userRole } ) =>
                                         <img className="w-3" src={ plusIcon } alt="" />
                                     </IconButton>
 
-                                    { task.assignedTo.map( ( member, i ) => (
-                                        <Tooltip key={ member.id } title={ member.fullName }>
-                                            <img
-                                                className={ `w-8 h-8 cursor-default z-50 relative border-white border rounded-full object-cover ${ i !== task.assignedTo.length - 1 ? "-mr-4" : ""
-                                                    }` }
-                                                src={ member?.profileImage || userAvatar }
-                                                alt=""
-                                            />
+                                    { task.assignedTo.map( ( m, idx ) => (
+                                        <Tooltip key={ m.id } title={ m.fullName }>
+                                            <div
+                                                key={ idx }
+                                                className={ `min-w-8 min-h-8 w-8 h-8 rounded-full object-cover flex items-center justify-center text-white text-[13px] font-semibold ${ idx !== task.assignedTo?.length - 1 ? "-mr-3.5 z-50 border-white border-2" : "" }` }
+                                                style={ {
+                                                    backgroundColor: "#9c9b9b",
+                                                    transition: `transform 0.2s ease ${ idx * 35 }ms`,
+                                                    transform: hovered
+                                                        ? "scale(1.12) translateY(-2px)"
+                                                        : "scale(1) translateY(0)",
+                                                } }
+                                            >
+                                                { m.fullName?.charAt( 0 ).toUpperCase() }
+                                            </div>
                                         </Tooltip>
                                     ) ) }
                                 </div>

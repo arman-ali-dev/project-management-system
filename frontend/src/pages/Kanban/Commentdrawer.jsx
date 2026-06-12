@@ -2,17 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { Drawer, IconButton, CircularProgress, Tooltip } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import
-{
-    getComments,
-    addComment,
-    deleteComment,
-    clearComments,
-    selectComments,
-    selectCLoading,
-    selectCError,
-    selectCSending,
-    selectCSendError,
-} from "../../redux/member/commentSlice";
+    {
+        getComments,
+        addComment,
+        deleteComment,
+        clearComments,
+        selectComments,
+        selectCLoading,
+        selectCError,
+        selectCSending,
+        selectCSendError,
+    } from "../../redux/member/commentSlice";
 import userAvatar from "../../assets/userAvatar.png";
 
 const formatDate = ( iso ) =>
@@ -21,12 +21,18 @@ const formatDate = ( iso ) =>
         day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
+        timeZone: "Asia/Kolkata",
     } );
 
-const CommentBubble = ( { comment, currentUserId, userRole, taskId, dispatch } ) =>
+const CommentBubble = ( {
+    comment,
+    currentUserId,
+    userRole,
+    taskId,
+    dispatch,
+} ) =>
 {
-    const isOwner =
-        comment.authorId === currentUserId || userRole === "ADMIN";
+    const isOwner = comment.authorId === currentUserId || userRole === "ADMIN";
 
     const handleDelete = () =>
     {
@@ -119,7 +125,6 @@ const CommentDrawer = ( { open, onClose, task, currentUserId, userRole } ) =>
     return (
         <Drawer anchor="right" open={ open } onClose={ onClose }>
             <div className="w-95 h-full flex flex-col bg-white">
-
                 {/* ── header ── */ }
                 <div className="px-5 py-4 border-b flex items-center justify-between">
                     <div className="flex-1 min-w-0 pr-2">
@@ -138,7 +143,6 @@ const CommentDrawer = ( { open, onClose, task, currentUserId, userRole } ) =>
                 <div className="h-0.5 w-full bg-black opacity-30" />
 
                 <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
-
                     { loading && (
                         <div className="flex justify-center py-10">
                             <CircularProgress size={ 24 } sx={ { color: "#497AF5" } } />

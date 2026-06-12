@@ -21,4 +21,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
    ORDER BY m.sentAt DESC
 """)
     List<Message> findLatestGroupMessages(@Param("userId") Long userId);
+
+    void deleteAllByChatRoomId(Long chatRoomId);
 }

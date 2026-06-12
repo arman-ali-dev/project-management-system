@@ -10,70 +10,158 @@ import logoutIcon from "../assets/logout.png";
 import { Avatar, Button, Tooltip } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import CreateNewTaskForm from "../pages/Dashboard/CreateNewTaskForm";
-import { useSelector } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
+import
+{
+    clearNotifications,
+    markAllRead,
+    fetchNotifications,
+    clearNotificationsFromDb
+} from "../redux/member/notificationSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faArrowsRotate, faClipboard } from "@fortawesome/free-solid-svg-icons";
+import
+{
+    faCheck,
+    faArrowsRotate,
+    faClipboard,
+    faComment,
+} from "@fortawesome/free-solid-svg-icons";
+
 
 const Navbar = () =>
 {
-    const [ open, setOpen ] = useState( false );
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    const { reminders } = useSelector( state => state.reminder );
+    const [ open, setOpen ] = useState( false );
+    const [ showNotifications, setShowNotifications ] = useState( false );
+    const { isAuthenticated } = useSelector( ( state ) => state.auth );
+    const [ showReminders, setShowReminders ] = useState( false );
+
+    const notificationRef = useRef( null );
+    const remindersRef = useRef( null );
+
+    const { reminders } = useSelector( ( state ) => state.reminder );
     const { notifications } = useSelector( ( state ) => state.notification );
+    const { user } = useSelector( ( state ) => state.user );
+
+    const unreadCount = notifications.filter( ( n ) => !n.read ).length;
 
     const toggleDrawer = ( value ) => ( event ) =>
     {
         if (
             event.type === "keydown" &&
             ( event.key === "Tab" || event.key === "Shift" )
-        ) return;
+        )
+        {
+            return;
+        }
+
         setOpen( value );
     };
 
-    const navigate = useNavigate();
-
-    const [ showNotifications, setShowNotifications ] = useState( false );
-    const notificationRef = useRef( null );
-
-    const [ showReminders, setShowReminders ] = useState( false );
-    const remindersRef = useRef( null );
+    useEffect( () =>
+    {
+        if ( isAuthenticated )
+        {
+            dispatch( fetchNotifications() );
+        }
+    }, [ isAuthenticated, dispatch ] );
 
     const handleShowReminders = () =>
     {
-        setShowReminders( prev => !prev );
+        setShowReminders( ( prev ) => !prev );
         setShowNotifications( false );
     };
 
+
     const handleShowNotifications = () =>
     {
-        setShowNotifications( prev => !prev );
+        console.log( "Bell Clicked" );
+
+        if ( showNotifications )
+        {
+            console.log( "Closing by bell" );
+            setShowNotifications( false );
+            dispatch( clearNotificationsFromDb() );
+            return;
+        }
+
+        console.log( "Opening" );
+        setShowNotifications( true );
         setShowReminders( false );
+        dispatch( markAllRead() );
     };
 
     useEffect( () =>
     {
         const handleClickOutside = ( event ) =>
         {
-            if (
+            const clickedOutsideNotifications =
                 notificationRef.current &&
-                !notificationRef.current.contains( event.target ) &&
+                !notificationRef.current.contains( event.target );
+
+            const clickedOutsideReminders =
                 remindersRef.current &&
-                !remindersRef.current.contains( event.target )
-            )
+                !remindersRef.current.contains( event.target );
+
+            if ( clickedOutsideNotifications && clickedOutsideReminders )
             {
+                if ( showNotifications )
+                {
+                    console.log( "Closing by outside click" );
+                    dispatch( clearNotificationsFromDb() );
+                }
+
                 setShowNotifications( false );
                 setShowReminders( false );
             }
         };
+
         document.addEventListener( "mousedown", handleClickOutside );
-        return () => document.removeEventListener( "mousedown", handleClickOutside );
-    }, [] );
 
-    const { isAuthenticated } = useSelector( ( state ) => state.auth );
-    const { user } = useSelector( ( state ) => state.user );
+        return () =>
+        {
+            document.removeEventListener( "mousedown", handleClickOutside );
+        };
+    }, [ showNotifications, dispatch ] );
 
-    const unreadCount = notifications.filter( n => !n.read ).length;
+    const getNotificationBadgeText = ( elem ) =>
+    {
+        switch ( elem.type )
+        {
+            case "TASK_STATUS":
+                return "Task";
+
+            case "COMMENT":
+                return "Comment";
+
+            case "CHAT":
+                return "Message";
+
+            default:
+                return "Notification";
+        }
+    };
+
+    const getNotificationIcon = ( elem ) =>
+    {
+        if ( elem.type === "TASK_STATUS" )
+        {
+            return elem.newStatus === "DONE"
+                ? faCheck
+                : elem.newStatus === "IN_PROGRESS"
+                    ? faArrowsRotate
+                    : faClipboard;
+        }
+
+        if ( elem.type === "COMMENT" )
+        {
+            return faComment;
+        }
+
+        return null;
+    };
 
     return (
         <>
@@ -84,17 +172,25 @@ const Navbar = () =>
                     transition: "box-shadow 0.2s ease",
                 } }
             >
-                {/* Search Bar */ }
                 <div
                     className="search-input-wrap flex gap-2 items-center bg-[#EFEFEF] px-3 rounded-lg"
                     style={ { minWidth: 200 } }
                 >
                     <div className="flex justify-center items-center">
-                        <img className="w-3" src={ searchIcon } alt="" style={ { transition: "opacity 0.2s", opacity: 0.6 } } />
+                        <img
+                            className="w-3"
+                            src={ searchIcon }
+                            alt=""
+                            style={ { transition: "opacity 0.2s", opacity: 0.6 } }
+                        />
                     </div>
                     <input
                         className="border-0 mt-1 outline-0 text-[13px] placeholder:text-[13px] bg-transparent w-full"
-                        style={ { color: "#000", opacity: 0.8, transition: "opacity 0.2s" } }
+                        style={ {
+                            color: "#000",
+                            opacity: 0.8,
+                            transition: "opacity 0.2s",
+                        } }
                         type="text"
                         placeholder="Search here..."
                     />
@@ -103,8 +199,6 @@ const Navbar = () =>
                 <div className="flex justify-between pl-10">
                     <div className="flex items-center gap-7">
                         <div className="flex gap-2">
-
-                            {/* Reminders */ }
                             <div className="relative">
                                 <Tooltip title="Reminder">
                                     <div
@@ -117,12 +211,14 @@ const Navbar = () =>
                                             alt=""
                                             style={ {
                                                 transition: "transform 0.2s ease",
-                                                transform: showReminders ? "rotate(-15deg) scale(1.1)" : "rotate(0deg) scale(1)",
+                                                transform: showReminders
+                                                    ? "rotate(-15deg) scale(1.1)"
+                                                    : "rotate(0deg) scale(1)",
                                             } }
                                         />
                                         { reminders?.length > 0 && (
                                             <span className="badge-dot bg-[#FA2626] absolute -top-0.5 -right-1 opacity-80 flex justify-center items-center text-[9px] text-white h-3.5 w-3.5 rounded-full">
-                                                { reminders?.length }
+                                                { reminders?.length > 9 ? "9+" : reminders?.length }
                                             </span>
                                         ) }
                                     </div>
@@ -130,39 +226,63 @@ const Navbar = () =>
 
                                 <div
                                     ref={ remindersRef }
-                                    className={ `dropdown ${ showReminders ? "show" : "" } bg-[#EFEFEF] z-999 max-w-73.5 h-77.5 w-65 absolute` }
+                                    className={ `dropdown ${ showReminders ? "show" : ""
+                                        } bg-[#EFEFEF] z-999 max-w-73.5 h-77.5 w-65 absolute` }
                                 >
                                     <div className="border-b border-b-[#ccc] px-3 py-1.25">
-                                        <p className="text-black text-[14px] font-semibold">Task Reminders</p>
+                                        <p className="text-black text-[14px] font-semibold">
+                                            Task Reminders
+                                        </p>
                                     </div>
 
-                                    { reminders.slice( 0, 4 ).map( ( elem, index ) => (
-                                        <div
-                                            key={ index }
-                                            className={ `notification-row flex relative p-2.5 border-b border-b-[#e1e8ed] gap-3 items-start ${ index % 2 !== 0 ? "bg-[#dadada]" : "" }` }
-                                            style={ {
-                                                animationDelay: `${ index * 0.05 }s`,
-                                                animation: showReminders ? `fadeSlideDown 0.2s ease ${ index * 0.05 }s both` : "none",
-                                            } }
-                                        >
-                                            <div>
-                                                <p className="text-black font-semibold capitalize text-[14px]">{ elem.title }</p>
-                                                <p className="text-[#333333] text-[12px] -mt-1 font-medium">{ elem.message }</p>
-                                                <p className="text-[#666666] text-[13px] mt-1 font-medium">{ elem.dueDate }</p>
+                                    { reminders?.length === 0 ? (
+                                        <p className="text-center text-[12px] text-gray-400 py-8">
+                                            No reminders yet
+                                        </p>
+                                    ) : (
+                                        reminders?.slice( 0, 4 ).map( ( elem, index ) => (
+                                            <div
+                                                key={ index }
+                                                className={ `notification-row flex relative p-2.5 border-b border-b-[#e1e8ed] gap-3 items-start ${ index % 2 !== 0 ? "bg-[#dadada]" : ""
+                                                    }` }
+                                                style={ {
+                                                    animationDelay: `${ index * 0.05 }s`,
+                                                    animation: showReminders
+                                                        ? `fadeSlideDown 0.2s ease ${ index * 0.05
+                                                        }s both`
+                                                        : "none",
+                                                } }
+                                            >
+                                                <div>
+                                                    <p className="text-black font-semibold capitalize text-[14px]">
+                                                        { elem.title }
+                                                    </p>
+                                                    <p className="text-[#333333] text-[12px] -mt-1 font-medium">
+                                                        { elem.message }
+                                                    </p>
+                                                    <p className="text-[#666666] text-[13px] mt-1 font-medium">
+                                                        { elem.dueDate }
+                                                    </p>
+                                                </div>
+
+                                                <div>
+                                                    <p
+                                                        className={ `text-white inline-block text-[11px] px-1.5 absolute top-0 right-0 ${ elem.priority === "OVERDUE"
+                                                            ? "bg-[rgba(250,38,38,.8)]"
+                                                            : elem.priority === "TODAY"
+                                                                ? "bg-[#18A322]"
+                                                                : "bg-[#157FD7]"
+                                                            }` }
+                                                    >
+                                                        { elem.priority }
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className={ `text-white inline-block text-[11px] px-1.5 absolute top-0 right-0 ${ elem.priority === "OVERDUE" ? "bg-[rgba(250,38,38,.8)]" :
-                                                    elem.priority === "TODAY" ? "bg-[#18A322]" : "bg-[#157FD7]"
-                                                    }` }>
-                                                    { elem.priority }
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ) ) }
+                                        ) )
+                                    ) }
                                 </div>
                             </div>
 
-                            {/* Notifications */ }
                             <div className="relative">
                                 <Tooltip title="Notifications">
                                     <div
@@ -175,10 +295,12 @@ const Navbar = () =>
                                             alt=""
                                             style={ {
                                                 transition: "transform 0.3s ease",
-                                                transform: showNotifications ? "rotate(20deg) scale(1.1)" : "rotate(0deg) scale(1)",
+                                                transform: showNotifications
+                                                    ? "rotate(20deg) scale(1.1)"
+                                                    : "rotate(0deg) scale(1)",
                                             } }
                                         />
-                                        {/* Badge — unread count */ }
+
                                         { unreadCount > 0 && (
                                             <span className="badge-dot bg-[#FA2626] absolute -top-0.5 -right-1 opacity-80 flex justify-center items-center text-[9px] text-white h-3.5 w-3.5 rounded-full">
                                                 { unreadCount > 9 ? "9+" : unreadCount }
@@ -189,73 +311,84 @@ const Navbar = () =>
 
                                 <div
                                     ref={ notificationRef }
-                                    className={ `dropdown ${ showNotifications ? "show" : "" } bg-[#EFEFEF] z-999 max-w-73.5 h-77.5 w-65 absolute` }
+                                    className={ `dropdown ${ showNotifications ? "show" : ""
+                                        } bg-[#EFEFEF] z-999 max-w-73.5 h-77.5 w-65 absolute` }
                                 >
-                                    {/* Header */ }
                                     <div className="border-b border-b-[#ccc] px-3 py-1.25">
                                         <p className="text-black text-[14px] font-semibold">
-                                            { unreadCount } new notification{ unreadCount !== 1 ? "s" : "" }
+                                            { unreadCount } new notification
+                                            { unreadCount !== 1 ? "s" : "" }
                                         </p>
                                     </div>
 
-                                    {/* List */ }
                                     { notifications.length === 0 ? (
-                                        <p className="text-center text-[12px] text-gray-400 py-8">No notifications yet</p>
+                                        <p className="text-center text-[12px] text-gray-400 py-8">
+                                            No notifications yet
+                                        </p>
                                     ) : (
-                                        notifications.slice( 0, 4 ).map( ( elem, index ) => (
-                                            <div
-                                                key={ elem.id || index }
-                                                className={ `notification-row flex relative p-2.5 border-b border-b-[#e1e8ed] gap-3 items-start ${ index % 2 !== 0 ? "bg-[#dadada]" : "" }` }
-                                                style={ {
-                                                    animation: showNotifications ? `fadeSlideDown 0.2s ease ${ index * 0.05 }s both` : "none",
-                                                } }
-                                            >
-                                                {/* Avatar / Icon */ }
-                                                <div>
-                                                    { elem.type === "TASK_STATUS" ? (
-                                                        <div className={ `min-w-8 min-h-8 w-8 h-8 rounded-full flex items-center justify-center text-white text-[13px] ${ elem.newStatus === "DONE" ? "bg-[#09C015]" :
-                                                            elem.newStatus === "IN_PROGRESS" ? "bg-[#E8A020]" : "bg-[#497AF5]"
-                                                            }` }>
-                                                            <FontAwesomeIcon
-                                                                icon={
-                                                                    elem.newStatus === "DONE" ? faCheck :
-                                                                        elem.newStatus === "IN_PROGRESS" ? faArrowsRotate : faClipboard
-                                                                }
+                                        notifications.slice( 0, 4 ).map( ( elem, index ) =>
+                                        {
+                                            const icon = getNotificationIcon( elem );
+
+                                            return (
+                                                <div
+                                                    key={ elem.id || index }
+                                                    className={ `notification-row flex relative p-3 border-b border-[#ECECEC] gap-3 items-start transition-colors hover:bg-[#F8F9FA] ${ !elem.read ? "bg-[#FAFAFA]" : "bg-white"
+                                                        }` }
+                                                    style={ {
+                                                        animation: showNotifications
+                                                            ? `fadeSlideDown 0.2s ease ${ index * 0.05 }s both`
+                                                            : "none",
+                                                    } }
+                                                >
+                                                    {/* Icon */ }
+                                                    <div>
+                                                        { icon ? (
+                                                            <div className="min-w-8 min-h-8 w-8 h-8 rounded-full flex items-center justify-center bg-[#F3F4F6] text-[#555] text-[12px] border border-[#E5E7EB]">
+                                                                <FontAwesomeIcon icon={ icon } />
+                                                            </div>
+                                                        ) : (
+                                                            <img
+                                                                className="min-w-8 object-cover min-h-8 w-8 h-8 rounded-full border border-[#E5E7EB]"
+                                                                src={ elem.profileUrl || userAvatar }
+                                                                alt=""
                                                             />
-                                                        </div>
-                                                    ) : (
-                                                        <img
-                                                            className="min-w-8 object-cover min-h-8 w-8 h-8 rounded-full"
-                                                            src={ elem.profileUrl || userAvatar }
-                                                            alt=""
-                                                        />
-                                                    ) }
-                                                </div>
+                                                        ) }
+                                                    </div>
 
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-black font-semibold capitalize text-[13px] truncate">
-                                                        { elem.title || elem.username }
-                                                    </p>
-                                                    <p className="text-[#333333] text-[11px] font-medium leading-tight">
-                                                        { elem.body || elem.message }
-                                                    </p>
-                                                    <p className="text-[#666666] text-[11px] mt-0.5 font-medium">
-                                                        { elem.createdAt
-                                                            ? new Date( elem.createdAt ).toLocaleTimeString( [], { hour: "2-digit", minute: "2-digit" } )
-                                                            : elem.time }
+                                                    {/* Content */ }
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-[#111827] font-semibold text-[13px] truncate">
+                                                            { elem.title || elem.username }
+                                                        </p>
+
+                                                        <p className="text-[#6B7280] text-[12px] leading-relaxed mt-0.5">
+                                                            { elem.body || elem.message }
+                                                        </p>
+
+                                                        <p className="text-[#9CA3AF] text-[11px] mt-1">
+                                                            { elem.createdAt
+                                                                ? new Date( elem.createdAt ).toLocaleTimeString( [], {
+                                                                    hour: "2-digit",
+                                                                    minute: "2-digit",
+                                                                } )
+                                                                : elem.time }
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Badge */ }
+                                                    <p
+                                                        className={ `inline-block text-[10px] px-2 py-0.5 rounded-full absolute top-2 right-2 font-medium ${ !elem.read
+                                                            ? "bg-[#111827] text-white"
+                                                            : "bg-[#F3F4F6] text-[#666]"
+                                                            }` }
+                                                    >
+                                                        { getNotificationBadgeText( elem ) }
                                                     </p>
                                                 </div>
-
-                                                {/* Badge */ }
-                                                <p className={ `text-white inline-block text-[10px] px-1.5 py-0.5 rounded absolute top-1 right-1 ${ elem.type === "TASK_STATUS" ? "bg-[#157FD7]" :
-                                                    !elem.read ? "bg-[#18A322]" : "bg-[#888]"
-                                                    }` }>
-                                                    { elem.type === "TASK_STATUS" ? "Task" : "Chat" }
-                                                </p>
-                                            </div>
-                                        ) )
+                                            );
+                                        } )
                                     ) }
-
                                     <div className="absolute bottom-0 w-full">
                                         <Button
                                             sx={ {
@@ -267,7 +400,9 @@ const Navbar = () =>
                                                 textTransform: "capitalize",
                                                 borderRadius: "0px",
                                                 transition: "background 0.18s ease !important",
-                                                "&:hover": { backgroundColor: "#c8c8c8 !important" },
+                                                "&:hover": {
+                                                    backgroundColor: "#c8c8c8 !important",
+                                                },
                                             } }
                                         >
                                             <span className="font-medium">View More</span>
@@ -276,8 +411,13 @@ const Navbar = () =>
                                 </div>
                             </div>
 
-                            {/* Create Task */ }
-                            <Tooltip title={ user?.role === "MEMBER" ? "Only Admin can create tasks" : "Create Task" }>
+                            <Tooltip
+                                title={
+                                    user?.role === "MEMBER"
+                                        ? "Only Admin can create tasks"
+                                        : "Create Task"
+                                }
+                            >
                                 <div
                                     onClick={ ( e ) =>
                                     {
@@ -299,11 +439,19 @@ const Navbar = () =>
 
                         { isAuthenticated ? (
                             <Tooltip title="Profile">
-                                <div className="avatar-btn cursor-pointer" onClick={ () => navigate( "/profile" ) }>
+                                <div
+                                    className="avatar-btn cursor-pointer"
+                                    onClick={ () => navigate( "/profile" ) }
+                                >
                                     <Avatar
                                         src={ user?.profileImage == null ? userAvatar : user.profileImage }
                                         alt="User Profile"
-                                        sx={ { width: 35, height: 35, cursor: "pointer", objectFit: "cover" } }
+                                        sx={ {
+                                            width: 35,
+                                            height: 35,
+                                            cursor: "pointer",
+                                            objectFit: "cover",
+                                        } }
                                     />
                                 </div>
                             </Tooltip>

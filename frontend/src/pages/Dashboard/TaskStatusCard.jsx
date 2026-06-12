@@ -1,5 +1,6 @@
 import { Button, MenuItem, Select } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import CreateNewTaskForm from "./CreateNewTaskForm";
 
 const TaskStatusCard = () =>
@@ -8,6 +9,18 @@ const TaskStatusCard = () =>
     const [ visible, setVisible ] = useState( false );
     const [ hovered, setHovered ] = useState( false );
     const cardRef = useRef( null );
+
+    const { tasks } = useSelector( ( state ) => state.adminTask );
+    const safeTasks = Array.isArray( tasks ) ? tasks : [];
+
+    // ── Status counts ─────────────────────────────────────────────────────────
+    const todoCount = safeTasks.filter( ( t ) => t.status === "TODO" ).length;
+    const inProgressCount = safeTasks.filter( ( t ) => t.status === "IN_PROGRESS" ).length;
+    const doneCount = safeTasks.filter( ( t ) => t.status === "DONE" ).length;
+    const totalCount = safeTasks.length;
+
+    // ── Progress bar widths (% of total) ──────────────────────────────────────
+    const pct = ( count ) => totalCount === 0 ? 0 : Math.round( ( count / totalCount ) * 100 );
 
     useEffect( () =>
     {
@@ -36,9 +49,9 @@ const TaskStatusCard = () =>
     };
 
     const statusItems = [
-        { label: "To-Do", color: "#157FD7", bgColor: "rgba(21,127,215,.2)", count: "+12", width: "35%" },
-        { label: "In Progress", color: "#F55600", bgColor: "rgba(245,86,0,.2)", count: "+30", width: "25%" },
-        { label: "Done", color: "#18A322", bgColor: "rgba(24,163,34,.2)", count: "+12", width: "40%" },
+        { label: "To-Do", color: "#157FD7", bgColor: "rgba(21,127,215,.2)", count: todoCount, width: `${ pct( todoCount ) }%` },
+        { label: "In Progress", color: "#F55600", bgColor: "rgba(245,86,0,.2)", count: inProgressCount, width: `${ pct( inProgressCount ) }%` },
+        { label: "Done", color: "#18A322", bgColor: "rgba(24,163,34,.2)", count: doneCount, width: `${ pct( doneCount ) }%` },
     ];
 
     return (
@@ -110,19 +123,19 @@ const TaskStatusCard = () =>
                                 color: hovered ? "#157FD7" : "#111",
                             } }
                         >
-                            68
+                            { totalCount }
                         </h3>
                         <p className="font-medium text-[12px] -mt-0.5" style={ { opacity: 0.85 } }>
-                            Task Right Now This Month
+                            Total Tasks
                         </p>
                     </div>
 
                     {/* Animated Progress Bar */ }
                     <div className="flex gap-1 mt-5 overflow-hidden rounded-sm">
                         { [
-                            { width: "40%", color: "#18A322", delay: 0 },
-                            { width: "35%", color: "#157FD7", delay: 80 },
-                            { width: "25%", color: "#F55600", delay: 160 },
+                            { width: `${ pct( doneCount ) }%`, color: "#18A322", delay: 0 },
+                            { width: `${ pct( todoCount ) }%`, color: "#157FD7", delay: 80 },
+                            { width: `${ pct( inProgressCount ) }%`, color: "#F55600", delay: 160 },
                         ].map( ( bar, i ) => (
                             <span
                                 key={ i }

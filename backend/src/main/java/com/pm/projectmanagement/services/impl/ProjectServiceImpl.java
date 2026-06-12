@@ -8,6 +8,7 @@ import com.pm.projectmanagement.models.ChatRoom;
 import com.pm.projectmanagement.models.Project;
 import com.pm.projectmanagement.models.User;
 import com.pm.projectmanagement.repositories.ChatRoomRepository;
+import com.pm.projectmanagement.repositories.MessageRepository;
 import com.pm.projectmanagement.repositories.ProjectRepository;
 import com.pm.projectmanagement.repositories.UserRepository;
 import com.pm.projectmanagement.services.ChatService;
@@ -31,17 +32,21 @@ public class ProjectServiceImpl implements ProjectService {
     private final ChatService chatService;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final MessageRepository messageRepository;
 
     @Autowired
     public ProjectServiceImpl(ProjectRepository projectRepository,
                               ChatRoomRepository chatRoomRepository,
                               ChatService chatService,
-                              UserRepository userRepository, UserService userService) {
+                              UserRepository userRepository,
+                              UserService userService,
+                              MessageRepository messageRepository) {
         this.projectRepository = projectRepository;
         this.chatRoomRepository = chatRoomRepository;
         this.chatService = chatService;
         this.userRepository = userRepository;
         this.userService = userService;
+        this.messageRepository = messageRepository;
     }
 
     @Override
@@ -130,7 +135,10 @@ public class ProjectServiceImpl implements ProjectService {
 
         return projectRepository.save(existingProject);
     }
+
+
     @Override
+    @Transactional
     public void deleteProject(Long id) {
         Project project = this.getProject(id);
         chatService.deleteChatRoomByProject(project.getId());

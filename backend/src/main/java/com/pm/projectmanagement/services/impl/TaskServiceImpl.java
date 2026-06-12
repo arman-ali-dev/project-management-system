@@ -1,13 +1,16 @@
 package com.pm.projectmanagement.services.impl;
 
+import com.pm.projectmanagement.enums.NotificationType;
 import com.pm.projectmanagement.enums.Priority;
 import com.pm.projectmanagement.enums.TaskStatus;
 import com.pm.projectmanagement.enums.UserRole;
 import com.pm.projectmanagement.exceptions.NotFoundException;
 import com.pm.projectmanagement.models.Document;
+import com.pm.projectmanagement.models.Notification;
 import com.pm.projectmanagement.models.Project;
 import com.pm.projectmanagement.models.Task;
 import com.pm.projectmanagement.models.User;
+import com.pm.projectmanagement.repositories.NotificationRepository;
 import com.pm.projectmanagement.repositories.TaskRepository;
 import com.pm.projectmanagement.requests.CreateTaskRequest;
 import com.pm.projectmanagement.responses.ReminderResponse;
@@ -38,20 +41,23 @@ public class TaskServiceImpl implements TaskService {
     private final UserService userService;
     private final EmailService emailService;
     private final SimpMessagingTemplate messagingTemplate;
-
-
+    private final NotificationRepository notificationRepository;
 
     @Autowired
-    public TaskServiceImpl(TaskRepository taskRepository,
-                           ProjectService projectService,
-                           UserService userService,
-                           EmailService emailService,
-                           SimpMessagingTemplate messagingTemplate) {
+    public TaskServiceImpl(
+            TaskRepository taskRepository,
+            ProjectService projectService,
+            UserService userService,
+            EmailService emailService,
+            SimpMessagingTemplate messagingTemplate,
+            NotificationRepository notificationRepository
+    ) {
         this.taskRepository = taskRepository;
         this.projectService = projectService;
         this.userService = userService;
         this.emailService = emailService;
         this.messagingTemplate = messagingTemplate;
+        this.notificationRepository = notificationRepository;
     }
 
     @Override
@@ -74,14 +80,65 @@ public class TaskServiceImpl implements TaskService {
         task.setDueDate(request.getDueDate());
         task.setAssignedTo(request.getAssignedTo());
 
-        for (Document document : request.getDocuments()) {
-            document.setTask(task);
-            document.setUploadedBy(user);
+        if (request.getDocuments() != null && !request.getDocuments().isEmpty()) {
+            for (Document document : request.getDocuments()) {
+                document.setTask(task);
+                document.setUploadedBy(user);
+            }
+
+            task.setSupportDocuments(request.getDocuments());
         }
 
-        task.setSupportDocuments(request.getDocuments());
+        Task savedTask = taskRepository.save(task);
 
-        return taskRepository.save(task);
+        if (savedTask.getAssignedTo() != null && !savedTask.getAssignedTo().isEmpty()) {
+            savedTask.getAssignedTo().forEach(assignedUser -> {
+
+                if (assignedUser == null || assignedUser.getId() == null) {
+                    return;
+                }
+
+                Notification notification = Notification.builder()
+                        .type(NotificationType.TASK_STATUS)
+                        .title("New Task Assigned")
+                        .body(user.getFullName() + " assigned you a task: \"" + savedTask.getTitle() + "\"")
+                        .readStatus(false)
+                        .taskId(savedTask.getId())
+                        .taskTitle(savedTask.getTitle())
+                        .sender(user)
+                        .receiver(assignedUser)
+                        .build();
+
+                notificationRepository.save(notification);
+
+                if (assignedUser.getEmail() != null && !assignedUser.getEmail().trim().isEmpty()) {
+                    try {
+                        emailService.sendTaskAssignedEmail(
+                                savedTask,
+                                assignedUser,
+                                user
+                        );
+                    } catch (Exception e) {
+                        System.err.println("Failed to send task assigned email to: " + assignedUser.getEmail());
+                        e.printStackTrace();
+                    }
+                }
+
+                TaskStatusEvent event = TaskStatusEvent.builder()
+                        .taskId(savedTask.getId())
+                        .taskTitle(savedTask.getTitle())
+                        .newStatus(savedTask.getStatus().toString())
+                        .changedByName(user.getFullName())
+                        .build();
+
+                messagingTemplate.convertAndSend(
+                        "/topic/task-status/" + assignedUser.getId(),
+                        event
+                );
+            });
+        }
+
+        return savedTask;
     }
 
     @Override
@@ -187,21 +244,30 @@ public class TaskServiceImpl implements TaskService {
                 .changedByName(user.getFullName())
                 .build();
 
-        saved.getAssignedTo().forEach(assignedUser -> {
-            if (assignedUser.getId().equals(user.getId())) return;
+        if (saved.getAssignedTo() != null) {
+            saved.getAssignedTo().forEach(assignedUser -> {
+                if (assignedUser == null || assignedUser.getId() == null) return;
+                if (assignedUser.getId().equals(user.getId())) return;
 
+                Notification notification = Notification.builder()
+                        .type(NotificationType.TASK_STATUS)
+                        .title("Task Status Updated")
+                        .body("\"" + saved.getTitle() + "\" is now " + saved.getStatus() + " - by " + user.getFullName())
+                        .readStatus(false)
+                        .taskId(saved.getId())
+                        .taskTitle(saved.getTitle())
+                        .sender(user)
+                        .receiver(assignedUser)
+                        .build();
 
-            System.out.println("Sending WS event to user: " + assignedUser.getId()); // ← add karo
+                notificationRepository.save(notification);
 
-
-            messagingTemplate.convertAndSend(
-                    "/topic/task-status/" + assignedUser.getId(),
-                    event
-            );
-
-// Iske baad yeh add karo
-            System.out.println("Event sent to topic: /topic/task-status/" + assignedUser.getId());
-        });
+                messagingTemplate.convertAndSend(
+                        "/topic/task-status/" + assignedUser.getId(),
+                        event
+                );
+            });
+        }
 
         return saved;
     }
@@ -214,13 +280,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<Task> filterTasks(TaskStatus status, Priority priority) {
         if (status != null) {
-            return taskRepository
-                    .findByStatusOrderByCreatedAtDesc(status);
+            return taskRepository.findByStatusOrderByCreatedAtDesc(status);
         }
 
         if (priority != null) {
-            return taskRepository
-                    .findByPriorityOrderByCreatedAtDesc(priority);
+            return taskRepository.findByPriorityOrderByCreatedAtDesc(priority);
         }
 
         return taskRepository.findAll(
@@ -244,7 +308,6 @@ public class TaskServiceImpl implements TaskService {
     public Map<LocalDate, Integer> getTasksCountByMonth(int month, int year, User user) {
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.plusMonths(1).minusDays(1);
-
 
         List<Task> tasks;
 
@@ -282,10 +345,8 @@ public class TaskServiceImpl implements TaskService {
             );
         }
 
-
         return tasks.stream()
                 .collect(Collectors.groupingBy(Task::getDueDate));
-
     }
 
     @Override
@@ -307,17 +368,14 @@ public class TaskServiceImpl implements TaskService {
                     if (task.getDueDate().isBefore(today)) {
                         priority = "OVERDUE";
                         message = "Task is overdue";
-                    }
-                    else if (task.getDueDate().isEqual(today)) {
+                    } else if (task.getDueDate().isEqual(today)) {
                         priority = "TODAY";
                         message = "Task is due today";
-                    }
-                    else if (task.getDueDate().isEqual(tomorrow)) {
+                    } else if (task.getDueDate().isEqual(tomorrow)) {
                         priority = "TOMORROW";
                         message = "Task is due tomorrow";
-                    }
-                    else {
-                        return null; // skip other future tasks
+                    } else {
+                        return null;
                     }
 
                     return new ReminderResponse(
@@ -332,6 +390,4 @@ public class TaskServiceImpl implements TaskService {
                 .filter(Objects::nonNull)
                 .toList();
     }
-
-
 }

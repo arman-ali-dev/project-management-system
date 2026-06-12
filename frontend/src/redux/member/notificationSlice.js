@@ -1,4 +1,3 @@
-// src/redux/member/notificationSlice.js
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -7,37 +6,71 @@ export const fetchNotifications = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("jwt");
+
       const { data } = await axios.get(
         "https://apislack.a2groups.org/api/messages/notifications",
-        { headers: { Authorization: `Bearer ${token}` } },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
-      console.log("notifications: ", data);
+
+      console.log("notifications:", data);
       return data;
     } catch (err) {
-      return rejectWithValue(err.response?.data);
+      return rejectWithValue(err.response?.data || "Failed");
+    }
+  },
+);
+
+export const clearNotificationsFromDb = createAsyncThunk(
+  "notification/clearNotificationsFromDb",
+  async (_, { rejectWithValue }) => {
+    try {
+      console.log("Deleted All Notifications");
+      const token = localStorage.getItem("jwt");
+
+      await axios.delete("https://apislack.a2groups.org/api/messages/notifications", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("Deleted All Notifications");
+
+      return true;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data || "Failed to clear notifications",
+      );
     }
   },
 );
 
 const notificationSlice = createSlice({
   name: "notification",
+
   initialState: {
     notifications: [],
     loading: false,
   },
+
   reducers: {
-    // ── Real-time notification add karo ───────────────────────────────────────
     addNotification: (state, action) => {
-      // Duplicate check — same id already hai toh mat add karo
       const exists = state.notifications.some(
         (n) => n.id === action.payload.id,
       );
+
       if (!exists) {
-        state.notifications.unshift(action.payload); // newest first
+        state.notifications.unshift(action.payload);
       }
     },
 
-    // ── Notification read mark karo ───────────────────────────────────────────
+    clearNotifications: (state) => {
+      state.notifications = [];
+    },
+
     markAllRead: (state) => {
       state.notifications = state.notifications.map((n) => ({
         ...n,
@@ -50,35 +83,43 @@ const notificationSlice = createSlice({
       if (notif) notif.read = true;
     },
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchNotifications.pending, (state) => {
         state.loading = true;
       })
+
       .addCase(fetchNotifications.fulfilled, (state, action) => {
         state.loading = false;
-        // ── Real-time wali notifications preserve karo ────────────────────────
-        // Backend se aaye notifications + already stored real-time notifications merge karo
+
         const backendNotifs = action.payload || [];
-        const realtimeNotifs = state.notifications.filter(
-          (n) => n.type === "CHAT" || n.type === "TASK_STATUS",
-        );
 
-        // Backend notifications mein jo real-time mein nahi hain woh add karo
-        const merged = [...realtimeNotifs];
-        backendNotifs.forEach((bn) => {
-          const alreadyExists = merged.some((n) => n.id === bn.id);
-          if (!alreadyExists) merged.push(bn);
-        });
-
-        state.notifications = merged;
+        state.notifications = backendNotifs.map((n) => ({
+          id: n.id,
+          type: n.type,
+          title: n.title || n.senderName || "Notification",
+          body: n.body || n.message || "",
+          read: n.read ?? false,
+          roomId: n.roomId,
+          roomName: n.roomName,
+          taskId: n.taskId,
+          taskTitle: n.taskTitle,
+          profileUrl: n.profileUrl,
+          createdAt: n.createdAt,
+        }));
       })
+
       .addCase(fetchNotifications.rejected, (state) => {
         state.loading = false;
+      })
+      .addCase(clearNotificationsFromDb.fulfilled, (state) => {
+        state.notifications = [];
       });
   },
 });
 
-export const { addNotification, markAllRead, markAsRead } =
+export const { addNotification, clearNotifications, markAllRead, markAsRead } =
   notificationSlice.actions;
+
 export default notificationSlice.reducer;

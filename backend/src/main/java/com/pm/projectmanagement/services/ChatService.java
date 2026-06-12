@@ -15,4 +15,8 @@ public interface ChatService {
 
     void deleteChatRoomByProject(Long projectId);
 
+    public ChatRoom getOrCreatePrivateRoom(User currentUser, User otherUser);
+
+    public List<ChatRoom> getPrivateRoomsForUser(Long userId);
+
 }

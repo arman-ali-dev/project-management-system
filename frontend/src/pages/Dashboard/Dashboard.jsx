@@ -1,16 +1,30 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import StatsCardsSection from "./StatsCardsSection";
 import FilesUploadedCard from "./FilesUploadedCard";
 import TaskStatusCard from "./TaskStatusCard";
 import TaskTable from "./TaskTable";
+import { fetchProjects } from "../../redux/admin/projectSlice";
+import { fetchTasks } from "../../redux/admin/taskSlice";
+import { fetchUsers } from "../../redux/admin/userSlice";
 
 const Dashboard = () =>
 {
+    const dispatch = useDispatch();
     const [ mounted, setMounted ] = useState( false );
 
     useEffect( () =>
     {
-        // Trigger mount animation
+        const token = localStorage.getItem( "jwt" );
+        if ( !token ) return;
+
+        dispatch( fetchProjects() );
+        dispatch( fetchTasks( {} ) );
+        dispatch( fetchUsers() );
+    }, [ dispatch ] );
+
+    useEffect( () =>
+    {
         requestAnimationFrame( () => setMounted( true ) );
     }, [] );
 
@@ -22,10 +36,8 @@ const Dashboard = () =>
                 transition: "opacity 0.3s ease",
             } }
         >
-            {/* Stats Cards — stagger handled inside StatsCard */ }
             <StatsCardsSection />
 
-            {/* Charts Row */ }
             <div className="grid grid-cols-6 gap-4 items-stretch mt-4">
                 <div
                     className="col-span-4 h-full"
@@ -50,7 +62,6 @@ const Dashboard = () =>
                 </div>
             </div>
 
-            {/* Task Table */ }
             <div
                 style={ {
                     opacity: mounted ? 1 : 0,

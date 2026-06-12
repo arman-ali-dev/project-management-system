@@ -172,4 +172,113 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    @Override
+    @Async
+    public void sendTaskAssignedEmail(Task task, User assignedUser, User assignedBy) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            String orderId = task.getProject() != null
+                    ? task.getProject().getOrderId()
+                    : "N/A";
+
+            String priority = task.getPriority() != null
+                    ? task.getPriority().toString()
+                    : "N/A";
+
+            String dueDate = task.getDueDate() != null
+                    ? task.getDueDate().toString()
+                    : "N/A";
+
+            String description = task.getDescription() != null
+                    ? task.getDescription()
+                    : "No description provided";
+
+            String htmlContent =
+                    "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto;'>"
+
+                            + "<div style='background: #000; padding: 24px 30px; border-radius: 8px 8px 0 0;'>"
+                            + "<h2 style='color: #fff; margin: 0; font-size: 18px;'>New Task Assigned</h2>"
+                            + "<p style='color: #aaa; margin: 4px 0 0; font-size: 13px;'>Project Management System</p>"
+                            + "</div>"
+
+                            + "<div style='background: #f9f9f9; padding: 28px 30px; border: 1px solid #eee;'>"
+
+                            + "<p style='color: #444; font-size: 14px; margin: 0 0 20px;'>Hi "
+                            + assignedUser.getFullName()
+                            + ",</p>"
+
+                            + "<p style='color: #444; font-size: 14px; margin: 0 0 20px;'>"
+                            + "<b>"
+                            + assignedBy.getFullName()
+                            + "</b> has assigned a new task to you."
+                            + "</p>"
+
+                            + "<div style='background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 20px;'>"
+
+                            + "<div style='margin-bottom: 14px;'>"
+                            + "<span style='font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;'>Order ID</span>"
+                            + "<p style='font-size: 16px; font-weight: 700; color: #111; margin: 4px 0 0;'>"
+                            + orderId
+                            + "</p>"
+                            + "</div>"
+
+                            + "<div style='margin-bottom: 14px;'>"
+                            + "<span style='font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;'>Task Name</span>"
+                            + "<p style='font-size: 15px; font-weight: 600; color: #111; margin: 4px 0 0;'>"
+                            + task.getTitle()
+                            + "</p>"
+                            + "</div>"
+
+                            + "<div style='margin-bottom: 14px;'>"
+                            + "<span style='font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;'>Priority</span>"
+                            + "<p style='font-size: 14px; color: #333; margin: 4px 0 0;'>"
+                            + priority
+                            + "</p>"
+                            + "</div>"
+
+                            + "<div style='margin-bottom: 14px;'>"
+                            + "<span style='font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;'>Due Date</span>"
+                            + "<p style='font-size: 14px; color: #333; margin: 4px 0 0;'>"
+                            + dueDate
+                            + "</p>"
+                            + "</div>"
+
+                            + "<div>"
+                            + "<span style='font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;'>Description</span>"
+                            + "<p style='font-size: 14px; color: #333; margin: 4px 0 0;'>"
+                            + description
+                            + "</p>"
+                            + "</div>"
+
+                            + "</div>"
+
+                            + "<p style='color: #888; font-size: 12px; margin: 24px 0 0;'>"
+                            + "Please login to the Project Management System and review your task."
+                            + "</p>"
+
+                            + "</div>"
+
+                            + "<div style='background: #f0f0f0; padding: 14px 30px; border-radius: 0 0 8px 8px; "
+                            + "text-align: center; border: 1px solid #eee; border-top: none;'>"
+                            + "<p style='color: #aaa; font-size: 11px; margin: 0;'>"
+                            + "Project Management System | Automated Notification"
+                            + "</p>"
+                            + "</div>"
+
+                            + "</div>";
+
+            helper.setTo(assignedUser.getEmail());
+            helper.setSubject(orderId + " - New Task Assigned - " + task.getTitle());
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+
+        } catch (MessagingException e) {
+            throw new MailSendException("Failed to send task assigned email");
+        }
+    }
+
+
 }

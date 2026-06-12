@@ -1,16 +1,31 @@
 package com.pm.projectmanagement.responses;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
-@AllArgsConstructor
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class NotificationResponse {
+
+    private Long id;
+    private String type;
+    private String title;
+    private String body;
+
+    private Boolean read;
+
+    private Long roomId;
+    private String roomName;
+
+    private Long taskId;
+    private String taskTitle;
+
+    private String senderName;
     private String profileUrl;
-    private String username;
-    private String message;
-    private String time;
-    private String status;
+
+    private LocalDateTime createdAt;
 }

@@ -233,18 +233,19 @@ const ProjectCard = ( { project, index = 0 } ) =>
 
             <div className="flex">
               { project?.members?.map( ( m, idx ) => (
-                <img
+                <div
                   key={ idx }
-                  className={ `min-w-8 min-h-8 w-8 h-8 rounded-full object-cover ${ idx !== project?.members?.length - 1 ? "-mr-3.5 z-50 border-white border" : "" }` }
-                  src={ m.profileImage || userAvatar }
-                  alt=""
+                  className={ `min-w-8 min-h-8 w-8 h-8 rounded-full object-cover flex items-center justify-center text-white text-[13px] font-semibold ${ idx !== project?.members?.length - 1 ? "-mr-3.5 z-50 border-white border-2" : "" }` }
                   style={ {
+                    backgroundColor: "#9c9b9b",
                     transition: `transform 0.2s ease ${ idx * 35 }ms`,
                     transform: hovered
                       ? "scale(1.12) translateY(-2px)"
                       : "scale(1) translateY(0)",
                   } }
-                />
+                >
+                  { m.fullName?.charAt( 0 ).toUpperCase() }
+                </div>
               ) ) }
             </div>
           </div>
@@ -255,8 +256,6 @@ const ProjectCard = ( { project, index = 0 } ) =>
           open={ open }
         />
       </div>
-
-
     </>
   );
 };
