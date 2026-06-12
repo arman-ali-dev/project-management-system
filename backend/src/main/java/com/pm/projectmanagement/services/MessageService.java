@@ -14,4 +14,6 @@ public interface MessageService {
     List<Message> getMessages(Long chatRoomId);
 
     public List<NotificationResponse> getNotifications(User currentUser);
+
+    void clearNotifications(User user);
 }
