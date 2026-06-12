@@ -6,24 +6,15 @@ export const fetchUserProfile = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       console.log("fetching2....");
-
       const token = localStorage.getItem("jwt");
-
       const { data } = await axios.get(
-        "https://apislack.a2groups.org/api/users/profile",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
+        "http://localhost:8081/api/users/profile",
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-
       console.log("User Data: ", data);
-
       return data;
     } catch (error) {
       console.error(error);
-
       return rejectWithValue(error.response?.data || "Something went wrong");
     }
   },
@@ -33,20 +24,13 @@ export const editProfile = createAsyncThunk(
   "user/editProfile",
   async (profileData, { rejectWithValue }) => {
     console.log(profileData);
-
     try {
       const token = localStorage.getItem("jwt");
-
       const { data } = await axios.put(
-        "https://apislack.a2groups.org/api/users/update",
+        "http://localhost:8081/api/users/update",
         profileData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-
       return data;
     } catch (error) {
       console.log(error);
@@ -55,13 +39,29 @@ export const editProfile = createAsyncThunk(
   },
 );
 
+export const fetchAllUsers = createAsyncThunk(
+  "users/fetchAll",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("jwt");
+      const { data } = await axios.get("http://localhost:8081/api/users/all", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log("Fetched users successfully", data);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+  },
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
     user: null,
+    users: [], // ← saare users
     loading: false,
     error: null,
-
     loadingUpdate: false,
   },
 
@@ -91,6 +91,19 @@ const userSlice = createSlice({
       })
       .addCase(editProfile.rejected, (state) => {
         state.loadingUpdate = false;
+      })
+
+      // FETCH ALL USERS
+      .addCase(fetchAllUsers.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchAllUsers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users = action.payload;
+      })
+      .addCase(fetchAllUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
