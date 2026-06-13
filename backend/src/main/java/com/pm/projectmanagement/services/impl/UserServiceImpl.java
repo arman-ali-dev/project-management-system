@@ -95,6 +95,8 @@ public void deleteUser(Long userId) {
         }
     }
 
+    
+
     userRepository.delete(user);
 }
 
