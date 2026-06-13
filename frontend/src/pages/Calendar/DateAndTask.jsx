@@ -130,7 +130,6 @@ const DateAndTask = ( { date, isPrevMonth, hasTask, taskCount, tasks, monthYear 
                                                 ) }
                                             </div>
 
-                                            {/* ── Assigned users ── */ }
                                             { task.assignedTo && task.assignedTo.length > 0 && (
                                                 <div className="mt-3">
                                                     <span className="text-[12px] text-gray-500 font-medium">
@@ -143,7 +142,7 @@ const DateAndTask = ( { date, isPrevMonth, hasTask, taskCount, tasks, monthYear 
                                                                 className="flex items-center gap-1.5 bg-gray-100 rounded-full pl-1 pr-3 py-1"
                                                             >
                                                                 <img
-                                                                    src={ u.profileImage || userAvatar }
+                                                                    src={ userAvatar }
                                                                     alt={ u.fullName }
                                                                     className="w-5.5 h-5.5 rounded-full object-cover"
                                                                 />
