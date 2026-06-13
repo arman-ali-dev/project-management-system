@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Dialog, DialogTitle, DialogContent, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import userAvatar from "../../assets/userAvatar.png";
 
 const DateAndTask = ( { date, isPrevMonth, hasTask, taskCount, tasks, monthYear } ) =>
 {
@@ -128,6 +129,32 @@ const DateAndTask = ( { date, isPrevMonth, hasTask, taskCount, tasks, monthYear 
                                                     </span>
                                                 ) }
                                             </div>
+
+                                            {/* ── Assigned users ── */ }
+                                            { task.assignedTo && task.assignedTo.length > 0 && (
+                                                <div className="mt-3">
+                                                    <span className="text-[12px] text-gray-500 font-medium">
+                                                        Assigned to:
+                                                    </span>
+                                                    <div className="flex gap-2 flex-wrap mt-1.5">
+                                                        { task.assignedTo.map( ( u, idx ) => (
+                                                            <div
+                                                                key={ u.id || idx }
+                                                                className="flex items-center gap-1.5 bg-gray-100 rounded-full pl-1 pr-3 py-1"
+                                                            >
+                                                                <img
+                                                                    src={ u.profileImage || userAvatar }
+                                                                    alt={ u.fullName }
+                                                                    className="w-5.5 h-5.5 rounded-full object-cover"
+                                                                />
+                                                                <span className="text-[12px] font-medium text-black">
+                                                                    { u.fullName }
+                                                                </span>
+                                                            </div>
+                                                        ) ) }
+                                                    </div>
+                                                </div>
+                                            ) }
                                         </div>
                                     </div>
                                 </div>
