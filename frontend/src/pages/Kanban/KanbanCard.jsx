@@ -10,7 +10,7 @@ import { Draggable } from "@hello-pangea/dnd";
 import { useDispatch, useSelector } from "react-redux";
 import AddMemberToTaskModal from "./AddMemberToTaskModal";
 import CommentDrawer from "./Commentdrawer";
-import SubtaskDrawer from "./SubTaskDrawer";
+import SubtaskDrawer from "./SubtaskDrawer";
 import { getSubtasks, selectSubtasks } from "../../redux/member/subtaskSlice";
 import checkIcon from '../../assets/checklist.png'
 
