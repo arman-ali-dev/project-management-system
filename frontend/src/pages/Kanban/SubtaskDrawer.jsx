@@ -21,7 +21,7 @@ import
     selectSTError,
     selectSTSending,
     selectSTSendError,
-} from "../../redux/member/subtaskSlice";
+} from "../../redux/member/subTaskSlice";
 import userAvatar from "../../assets/userAvatar.png";
 
 
