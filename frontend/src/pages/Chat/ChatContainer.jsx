@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addMessage, fetchMessages } from "../../redux/member/chatSlice";
 import { clearSelectedChatRoom } from "../../redux/member/chatRoomSlice";
 import { uploadToCloudinary } from "../../util/uploadToCloudinary";
-import useDesktopNotification from "../../hooks/useDesktopNotification";
+import useDesktopNotification from "../../hooks/Usedesktopnotification";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
