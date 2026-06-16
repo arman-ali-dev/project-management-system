@@ -11,7 +11,7 @@ import
 } from "../../redux/member/taskSlice";
 import { useDispatch } from "react-redux";
 import ViewTaskDetailsModal from "./ViewTaskDetailsModal";
-import CommentDrawer from "../Kanban/Commentdrawer";
+import CommentDrawer from "../Kanban/CommentDrawer";
 
 const Task = ( { task, isDragging = false, currentUserId, userRole } ) =>
 {
