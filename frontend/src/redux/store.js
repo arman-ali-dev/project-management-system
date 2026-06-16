@@ -17,6 +17,8 @@ import adminUserReducer from "./admin/userSlice";
 import adminProjectReducer from "./admin/projectSlice";
 import adminTaskReducer from "./admin/taskSlice";
 
+import subtaskReducer from "./member/subtaskSlice";
+
 import {
   persistReducer,
   FLUSH,
@@ -49,6 +51,7 @@ const rootReducer = combineReducers({
   notification: notificationSlice,
   comments: commentSlice,
   score: scoreReducer,
+  subtask: subtaskReducer,
 
   // ADMIN
   adminUser: adminUserReducer,

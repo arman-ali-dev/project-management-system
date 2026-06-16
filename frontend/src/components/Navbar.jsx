@@ -74,20 +74,14 @@ const Navbar = () =>
         setShowNotifications( false );
     };
 
-
     const handleShowNotifications = () =>
     {
-        console.log( "Bell Clicked" );
-
         if ( showNotifications )
         {
-            console.log( "Closing by bell" );
             setShowNotifications( false );
-            dispatch( clearNotificationsFromDb() );
             return;
         }
 
-        console.log( "Opening" );
         setShowNotifications( true );
         setShowReminders( false );
         dispatch( markAllRead() );
@@ -107,12 +101,6 @@ const Navbar = () =>
 
             if ( clickedOutsideNotifications && clickedOutsideReminders )
             {
-                if ( showNotifications )
-                {
-                    console.log( "Closing by outside click" );
-                    dispatch( clearNotificationsFromDb() );
-                }
-
                 setShowNotifications( false );
                 setShowReminders( false );
             }
@@ -124,8 +112,7 @@ const Navbar = () =>
         {
             document.removeEventListener( "mousedown", handleClickOutside );
         };
-    }, [ showNotifications, dispatch ] );
-
+    }, [] );
     const getNotificationBadgeText = ( elem ) =>
     {
         switch ( elem.type )
@@ -321,76 +308,72 @@ const Navbar = () =>
                                         </p>
                                     </div>
 
-                                    { notifications.length === 0 ? (
-                                        <p className="text-center text-[12px] text-gray-400 py-8">
-                                            No notifications yet
-                                        </p>
-                                    ) : (
-                                        notifications.slice( 0, 4 ).map( ( elem, index ) =>
-                                        {
-                                            const icon = getNotificationIcon( elem );
+                                    <div className="max-h-64 overflow-y-auto">
+                                        { notifications.length === 0 ? (
+                                            <p className="text-center text-[12px] text-gray-400 py-8">
+                                                No notifications yet
+                                            </p>
+                                        ) : (
+                                            notifications.map( ( elem, index ) =>
+                                            {
+                                                const icon = getNotificationIcon( elem );
 
-                                            return (
-                                                <div
-                                                    key={ elem.id || index }
-                                                    className={ `notification-row flex relative p-3 border-b border-[#ECECEC] gap-3 items-start transition-colors hover:bg-[#F8F9FA] ${ !elem.read ? "bg-[#FAFAFA]" : "bg-white"
-                                                        }` }
-                                                    style={ {
-                                                        animation: showNotifications
-                                                            ? `fadeSlideDown 0.2s ease ${ index * 0.05 }s both`
-                                                            : "none",
-                                                    } }
-                                                >
-                                                    {/* Icon */ }
-                                                    <div>
-                                                        { icon ? (
-                                                            <div className="min-w-8 min-h-8 w-8 h-8 rounded-full flex items-center justify-center bg-[#F3F4F6] text-[#555] text-[12px] border border-[#E5E7EB]">
-                                                                <FontAwesomeIcon icon={ icon } />
-                                                            </div>
-                                                        ) : (
-                                                            <img
-                                                                className="min-w-8 object-cover min-h-8 w-8 h-8 rounded-full border border-[#E5E7EB]"
-                                                                src={ elem.profileUrl || userAvatar }
-                                                                alt=""
-                                                            />
-                                                        ) }
-                                                    </div>
-
-                                                    {/* Content */ }
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="text-[#111827] font-semibold text-[13px] truncate">
-                                                            { elem.title || elem.username }
-                                                        </p>
-
-                                                        <p className="text-[#6B7280] text-[12px] leading-relaxed mt-0.5">
-                                                            { elem.body || elem.message }
-                                                        </p>
-
-                                                        <p className="text-[#9CA3AF] text-[11px] mt-1">
-                                                            { elem.createdAt
-                                                                ? new Date( elem.createdAt ).toLocaleTimeString( [], {
-                                                                    hour: "2-digit",
-                                                                    minute: "2-digit",
-                                                                } )
-                                                                : elem.time }
-                                                        </p>
-                                                    </div>
-
-                                                    {/* Badge */ }
-                                                    <p
-                                                        className={ `inline-block text-[10px] px-2 py-0.5 rounded-full absolute top-2 right-2 font-medium ${ !elem.read
-                                                            ? "bg-[#111827] text-white"
-                                                            : "bg-[#F3F4F6] text-[#666]"
+                                                return (
+                                                    <div
+                                                        key={ elem.id || index }
+                                                        className={ `notification-row flex relative p-3 border-b border-[#ECECEC] gap-3 items-start transition-colors hover:bg-[#F8F9FA] ${ !elem.read ? "bg-[#FAFAFA]" : "bg-white"
                                                             }` }
                                                     >
-                                                        { getNotificationBadgeText( elem ) }
-                                                    </p>
-                                                </div>
-                                            );
-                                        } )
-                                    ) }
+                                                        <div>
+                                                            { icon ? (
+                                                                <div className="min-w-8 min-h-8 w-8 h-8 rounded-full flex items-center justify-center bg-[#F3F4F6] text-[#555] text-[12px] border border-[#E5E7EB]">
+                                                                    <FontAwesomeIcon icon={ icon } />
+                                                                </div>
+                                                            ) : (
+                                                                <img
+                                                                    className="min-w-8 object-cover min-h-8 w-8 h-8 rounded-full border border-[#E5E7EB]"
+                                                                    src={ elem.profileUrl || userAvatar }
+                                                                    alt=""
+                                                                />
+                                                            ) }
+                                                        </div>
+
+                                                        <div className="flex-1 min-w-0 pr-12">
+                                                            <p className="text-[#111827] font-semibold text-[13px] truncate">
+                                                                { elem.title || elem.username }
+                                                            </p>
+
+                                                            <p className="text-[#6B7280] text-[12px] leading-relaxed mt-0.5">
+                                                                { elem.body || elem.message }
+                                                            </p>
+
+                                                            <p className="text-[#9CA3AF] text-[11px] mt-1">
+                                                                { elem.createdAt
+                                                                    ? new Date( elem.createdAt ).toLocaleTimeString( [], {
+                                                                        hour: "2-digit",
+                                                                        minute: "2-digit",
+                                                                    } )
+                                                                    : elem.time }
+                                                            </p>
+                                                        </div>
+
+                                                        <p
+                                                            className={ `inline-block text-[10px] px-2 py-0.5 rounded-full absolute top-2 right-2 font-medium ${ !elem.read
+                                                                ? "bg-[#111827] text-white"
+                                                                : "bg-[#F3F4F6] text-[#666]"
+                                                                }` }
+                                                        >
+                                                            { getNotificationBadgeText( elem ) }
+                                                        </p>
+                                                    </div>
+                                                );
+                                            } )
+                                        ) }
+                                    </div>
                                     <div className="absolute bottom-0 w-full">
                                         <Button
+                                            onClick={ () => dispatch( clearNotificationsFromDb() ) }
+                                            disabled={ notifications.length === 0 }
                                             sx={ {
                                                 width: "100%",
                                                 color: "black",
@@ -403,9 +386,13 @@ const Navbar = () =>
                                                 "&:hover": {
                                                     backgroundColor: "#c8c8c8 !important",
                                                 },
+                                                "&:disabled": {
+                                                    color: "#999",
+                                                    backgroundColor: "#eee",
+                                                },
                                             } }
                                         >
-                                            <span className="font-medium">View More</span>
+                                            <span className="font-medium">Clear All</span>
                                         </Button>
                                     </div>
                                 </div>

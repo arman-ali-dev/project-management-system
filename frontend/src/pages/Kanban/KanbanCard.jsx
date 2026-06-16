@@ -1,26 +1,41 @@
 // src/components/Kanban/KanbanCard.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import chronometerIcon from "../../assets/chronometer.png";
 import teamIcon from "../../assets/team.png";
 import messageIcon from "../../assets/mes.png";
 import { IconButton, Tooltip } from "@mui/material";
 import plusIcon from "../../assets/plus.png";
-import userAvatar from "../../assets/userAvatar.png";
 import { Skeleton } from "@mui/material";
 import { Draggable } from "@hello-pangea/dnd";
+import { useDispatch, useSelector } from "react-redux";
 import AddMemberToTaskModal from "./AddMemberToTaskModal";
-import CommentDrawer from "./Commentdrawer"; // ← new
+import CommentDrawer from "./CommentDrawer";
+import SubtaskDrawer from "./SubtaskDrawer";
+import { getSubtasks, selectSubtasks } from "../../redux/member/subtaskSlice";
+import checkIcon from '../../assets/checklist.png'
 
 const KanbanCard = ( { task, idx, currentUserId, userRole } ) =>
 {
+    const dispatch = useDispatch();
     const [ hovered, setHovered ] = useState( false );
 
     const [ addMemberOpen, setAddMemberOpen ] = useState( false );
     const [ commentOpen, setCommentOpen ] = useState( false );
+    const [ subtaskOpen, setSubtaskOpen ] = useState( false );
 
     const canDrag =
         userRole === "ADMIN" ||
         task?.assignedTo.find( ( elem ) => elem.id == currentUserId );
+
+    const subtasks = useSelector( selectSubtasks( task.id ) );
+
+    useEffect( () =>
+    {
+        dispatch( getSubtasks( task.id ) );
+    }, [ task.id, dispatch ] );
+
+    const totalSubtasks = subtasks.length;
+    const completedSubtasks = subtasks.filter( ( s ) => s.completed ).length;
 
     return (
         <>
@@ -98,6 +113,7 @@ const KanbanCard = ( { task, idx, currentUserId, userRole } ) =>
                                         </span>
                                     </div>
 
+                                    {/* Comments */ }
                                     <Tooltip title="View comments">
                                         <button
                                             onClick={ () => setCommentOpen( true ) }
@@ -108,6 +124,31 @@ const KanbanCard = ( { task, idx, currentUserId, userRole } ) =>
                                                 alt="message icon"
                                                 className="w-3 h-3"
                                             />
+                                            <span className="text-[#969696] text-[11px]">
+                                                { task.assignedTo.length }
+                                            </span>
+                                        </button>
+
+
+                                    </Tooltip>
+
+                                    <Tooltip title="View subtasks">
+                                        <button
+                                            onClick={ () => setSubtaskOpen( true ) }
+                                            className="flex gap-1.5 items-center hover:opacity-70 transition-opacity"
+                                        >
+                                            <img
+                                                src={ checkIcon }
+                                                alt="message icon"
+                                                className="w-3 h-3"
+                                            />
+                                            { totalSubtasks > 0 && (
+                                                <span
+                                                    className={ `text-[11px] font-medium text-[#969696]` }
+                                                >
+                                                    { completedSubtasks }/{ totalSubtasks }
+                                                </span>
+                                            ) }
                                         </button>
                                     </Tooltip>
                                 </div>
@@ -167,6 +208,14 @@ const KanbanCard = ( { task, idx, currentUserId, userRole } ) =>
             <CommentDrawer
                 open={ commentOpen }
                 onClose={ () => setCommentOpen( false ) }
+                task={ task }
+                currentUserId={ currentUserId }
+                userRole={ userRole }
+            />
+
+            <SubtaskDrawer
+                open={ subtaskOpen }
+                onClose={ () => setSubtaskOpen( false ) }
                 task={ task }
                 currentUserId={ currentUserId }
                 userRole={ userRole }

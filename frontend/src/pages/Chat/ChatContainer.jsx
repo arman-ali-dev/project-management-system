@@ -11,8 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addMessage, fetchMessages } from "../../redux/member/chatSlice";
 import { clearSelectedChatRoom } from "../../redux/member/chatRoomSlice";
 import { uploadToCloudinary } from "../../util/uploadToCloudinary";
-import useDesktopNotification from "../../hooks/Usedesktopnotification";
-import { addNotification } from "../../redux/member/notificationSlice";
+import useDesktopNotification from "../../hooks/useDesktopNotification";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
@@ -31,6 +30,7 @@ const ChatContainer = () =>
     const { selectedChatRoom } = useSelector( ( state ) => state.chatRoom );
     const currentUserId = user?.id;
 
+    // ── Page leave hone pe selectedChatRoom clear karo ────────────────────────
     useEffect( () =>
     {
         return () =>
@@ -39,12 +39,14 @@ const ChatContainer = () =>
         };
     }, [] );
 
+    // ── Access check ───────────────────────────────────────────────────────────
     const isAdmin = user?.role === "ADMIN";
     const isPrivate = selectedChatRoom?.type === "PRIVATE";
     const isMember = selectedChatRoom?.project?.members?.some(
         ( m ) => m.id === currentUserId,
     );
     const hasAccess = isAdmin || isPrivate || isMember;
+    // ──────────────────────────────────────────────────────────────────────────
 
     const [ input, setInput ] = useState( "" );
     const [ uploading, setUploading ] = useState( false );
@@ -72,7 +74,7 @@ const ChatContainer = () =>
     {
         const token = localStorage.getItem( "jwt" );
         const client = new Client( {
-            webSocketFactory: () => new SockJS( "https://apislack.a2groups.org/ws" ),
+            webSocketFactory: () => new SockJS( "http://localhost:8081/ws" ),
             connectHeaders: { Authorization: `Bearer ${ token }` },
             reconnectDelay: 5000,
             onConnect: () =>
@@ -80,13 +82,12 @@ const ChatContainer = () =>
                 client.subscribe( `/topic/room/${ selectedChatRoom?.id }`, ( message ) =>
                 {
                     const received = JSON.parse( message.body );
-
                     dispatch( addMessage( received ) );
 
                     if ( received.sender?.id === currentUserId ) return;
+                    if ( !document.hidden ) return;
 
                     const title = received.sender?.fullName || "New Message";
-
                     const body =
                         received.type === "TEXT"
                             ? received.content
@@ -96,25 +97,9 @@ const ChatContainer = () =>
                                     ? "🎥 Sent a video"
                                     : `📄 ${ received.fileName || "Sent a file" }`;
 
-                    dispatch(
-                        addNotification( {
-                            id: `chat-${ selectedChatRoom?.id }-${ Date.now() }`,
-                            type: "CHAT",
-                            title,
-                            body,
-                            roomId: selectedChatRoom?.id,
-                            roomName: selectedChatRoom?.name,
-                            createdAt: new Date().toISOString(),
-                            read: false,
-                        } )
-                    );
-
-                    if ( document.hidden )
-                    {
-                        showNotification( title, body, {
-                            tag: `chat-room-${ selectedChatRoom?.id }`,
-                        } );
-                    }
+                    showNotification( title, body, {
+                        tag: `chat-room-${ selectedChatRoom?.id }`,
+                    } );
                 } );
             },
             onStompError: ( frame ) =>
@@ -198,11 +183,10 @@ const ChatContainer = () =>
     const messageType = previewFile ? getMessageType( previewFile ) : null;
 
     return (
-        <div className="h-full w-full flex flex-col relative">
+        <div className="h-full w-full flex flex-col relative min-h-0">
             <ChatHeader />
 
             { !hasAccess ? (
-                // ── RESTRICTED ────────────────────────────────────────────────
                 <div className="flex-1 flex flex-col relative">
                     <div className="absolute inset-0 overflow-hidden pointer-events-none">
                         <div className="px-4 opacity-30 blur-sm">
@@ -234,7 +218,6 @@ const ChatContainer = () =>
                     </div>
                 </div>
             ) : (
-                // ── NORMAL ────────────────────────────────────────────────────
                 <div className="flex-1 flex flex-col min-h-0 pb-4">
                     <div className="flex-1 overflow-y-auto px-4 chat-scroll min-h-0">
                         <ChatArea messages={ messages } currentUserId={ currentUserId } />

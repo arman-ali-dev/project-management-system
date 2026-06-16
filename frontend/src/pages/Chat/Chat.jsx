@@ -31,24 +31,24 @@ const Chat = () =>
     }, [ dispatch ] );
 
     return (
-        <div className="bg-white rounded-lg shadow h-[87vh] m-4">
-            <div className="grid grid-cols-9 h-full">
+        <div className="bg-white rounded-lg shadow h-[87vh] m-4 overflow-hidden">
+            <div className="grid grid-cols-9 h-full min-h-0">
 
-                <div className="col-span-2">
+                <div className="col-span-2 h-full min-h-0">
                     <LeftSidebar />
                 </div>
 
                 { selectedChatRoom ? (
                     <>
-                        <div className="col-span-5 h-full overflow-y-hidden">
+                        <div className="col-span-5 h-full min-h-0 overflow-hidden">
                             <ChatContainer />
                         </div>
-                        <div className="col-span-2">
+                        <div className="col-span-2 h-full min-h-0">
                             <RightSidebar />
                         </div>
                     </>
                 ) : (
-                    <div className="col-span-7 border-l border-[rgba(200,200,200,.5)]">
+                    <div className="col-span-7 h-full min-h-0 border-l border-[rgba(200,200,200,.5)]">
                         <EmptyState />
                     </div>
                 ) }

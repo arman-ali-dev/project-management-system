@@ -1,9 +1,10 @@
 package com.pm.projectmanagement.models;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.pm.projectmanagement.enums.UserRole;
-import com.pm.projectmanagement.enums.UserStatus;
+import com.pm.projectmanagement.enums.TaskCategory;
+import com.pm.projectmanagement.enums.Priority;
+import com.pm.projectmanagement.enums.TaskStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -12,62 +13,78 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "tasks")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class User {
+@NoArgsConstructor
+public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
-    private String fullName;
+    private String title;
 
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String password;
-
-    private String profileImage;
+    @NotNull
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+    private TaskStatus status;
 
     @Enumerated(EnumType.STRING)
-    private UserStatus status;
+    private Priority priority;
 
-    private String designation;
+    @Enumerated(EnumType.STRING)
+    private TaskCategory category;
 
-    @ManyToMany(mappedBy = "assignedTo")
-    @JsonIgnore
-    private List<Task> tasks;
+    @NotNull
+    private LocalDate dueDate;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Folder> folders;
+    private Long estimatedTime;
 
-    @ManyToMany(mappedBy = "members")
-    @JsonIgnore
-    private List<Project> projects;
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
 
-    @OneToMany(
-            mappedBy = "user",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+    @ManyToMany
+    @JoinTable(
+            name = "task_assigned_to",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "task_id")
+
     )
-    @JsonIgnore
-    private List<PasswordSetToken> passwordSetTokens;
+    private List<User> assignedTo;
+
+    @ManyToOne
+    @JoinColumn(name = "created_by")
+    private User createdBy;
+
+    @ElementCollection
+    private List<String> labels;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Document> supportDocuments;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SubTask> subtasks;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    // Task.java mein add karo
+    private LocalDateTime completedAt;
+
 }

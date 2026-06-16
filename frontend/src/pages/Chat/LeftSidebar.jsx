@@ -59,7 +59,7 @@ const LeftSidebar = () =>
     console.log( "otherUsers", otherUsers );
 
     return (
-        <div className="h-full w-full px-4 py-6 border-[rgba(200,200,200,.5)] border-r overflow-y-auto">
+        <div className="h-full w-full px-4 py-6 border-[rgba(200,200,200,.5)] border-r overflow-y-auto chat-scroll">
             <ul className="space-y-2 border-b border-[rgba(200,200,200,.5)] pb-4 mb-3.5">
                 <li className="relative">
                     <Link className="text-[13px] opacity-75 flex items-center gap-1.5 hover:opacity-100 transition-all duration-75">
