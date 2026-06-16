@@ -53,13 +53,14 @@ public class Task {
     @JoinColumn(name = "project_id")
     private Project project;
 
-@ManyToMany
-@JoinTable(
-        name = "task_assigned_to",
-        joinColumns = @JoinColumn(name = "task_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
-)
-private List<User> assignedTo;
+    @ManyToMany
+    @JoinTable(
+            name = "task_assigned_to",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "task_id")
+
+    )
+    private List<User> assignedTo;
 
     @ManyToOne
     @JoinColumn(name = "created_by")
@@ -73,6 +74,9 @@ private List<User> assignedTo;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Document> supportDocuments;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SubTask> subtasks;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
