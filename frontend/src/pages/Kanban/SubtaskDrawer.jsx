@@ -90,7 +90,7 @@ const SubtaskRow = ( { subtask, taskId, canToggle, canManage, dispatch } ) =>
     );
 };
 
-const SubtaskDrawer = ( { open, onClose, task, currentUserId, userRole } ) =>
+const SubTaskDrawer = ( { open, onClose, task, currentUserId, userRole } ) =>
 {
     const dispatch = useDispatch();
     const taskId = task?.id;
@@ -265,4 +265,4 @@ const SubtaskDrawer = ( { open, onClose, task, currentUserId, userRole } ) =>
     );
 };
 
-export default SubtaskDrawer;
+export default SubTaskDrawer;
