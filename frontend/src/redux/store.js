@@ -17,7 +17,7 @@ import adminUserReducer from "./admin/userSlice";
 import adminProjectReducer from "./admin/projectSlice";
 import adminTaskReducer from "./admin/taskSlice";
 
-import subtaskReducer from "./member/subtaskSlice";
+import subtaskReducer from "./member/subTaskSlice";
 
 import {
   persistReducer,
