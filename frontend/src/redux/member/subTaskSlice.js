@@ -116,7 +116,7 @@ export const deleteSubtask = createAsyncThunk(
   },
 );
 
-const subtaskSlice = createSlice({
+const subTaskSlice = createSlice({
   name: "subtask",
   initialState: {
     byTaskId: {}, // { [taskId]: Subtask[] }
@@ -193,8 +193,8 @@ const subtaskSlice = createSlice({
   },
 });
 
-export const { clearSubtasks } = subtaskSlice.actions;
-export default subtaskSlice.reducer;
+export const { clearSubtasks } = subTaskSlice.actions;
+export default subTaskSlice.reducer;
 
 export const selectSubtasks = (taskId) => (state) =>
   state.subtask?.byTaskId?.[taskId] ?? [];
